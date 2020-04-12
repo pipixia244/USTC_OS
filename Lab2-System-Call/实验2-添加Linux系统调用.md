@@ -1,4 +1,4 @@
-- # 实验二：
+# 实验二：
 
 
 # 添加Linux系统调用及熟悉常见系统调用
@@ -55,6 +55,8 @@
 
 ### 一、添加Linux系统调用
 
+##### 目标：了解Linux是如何实现系统调用功能，并在Linux 0.11中添加两个系统调用
+
 **!!!注意: 请大家先学习完 "背景知识学习" 这一小节(在本文档的后面)**
 
 **!!!如果有问题请先参阅本部分第六点**
@@ -94,10 +96,11 @@
 
 **修改Makefile**
 
-make是一个自动构建程序的程序. 一个工程中的源文件不计其数，其按类型、功能、模块分别放在若干个目录中，makefile定义了一系列的规则来指定哪些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译，甚至于进行更复杂的功能操作. make则读取Makefile中的内容去完成编译工作. 大家如果对makefile感兴趣可以参阅[[1](https://seisman.github.io/how-to-write-makefile/overview.html)][[2](https://en.wikipedia.org/wiki/Makefile)], 或者以Makefile为关键词自行搜索.
+make是一个自动构建程序的程序. 一个工程中的源文件不计其数，其按类型、功能、模块分别放在若干个目录中，makefile定义了一系列的规则来指定哪些文件需要先编译，哪些文件需要后编译，哪些文件需要重新编译，甚至于进行更复杂的功能操作. make则读取Makefile中的内容去完成编译工作. 大家如果对makefile感兴趣可以参阅[[1](https://seisman.github.io/how-to-write-makefile/overview.html)] [[2](https://en.wikipedia.org/wiki/Makefile)], 或者以Makefile为关键词自行搜索.
 
 我们这次需要修改kernel目录下的Makefile文件. 需要修改两处
 第一处为(xxx为文件名, 下同)
+
 ```
 OBJS  = sched.o system_call.o traps.o asm.o fork.o \
 	panic.o printk.o vsprintf.o sys.o exit.o \
@@ -186,6 +189,8 @@ int main() {
   - 需要一边**展示修改部分**一边**口述大概的添加流程**. 请尽量控制在2分钟内.
 
 ### 二、熟悉Linux下常见的系统调用函数
+
+##### 目标：利用Linux提供的系统调用，实现一个简单shell程序
 
 #### 1、熟悉系统调用函数的用法
 
@@ -504,7 +509,7 @@ static struct m_inode * get_dir(const char * pathname)
     ……
 }
 ```
-处理方法就很显然了：**用get_fs_byte()获得一个字节的用户空间中的数据**。那如何实现从核心态拷贝数据到用户态内存空间中呢？我们看一看include/asm/segment.h：
+处理方法就很显然了：**用get\_fs\_byte()获得一个字节的用户空间中的数据**。那如何实现从核心态拷贝数据到用户态内存空间中呢？我们看一看include/asm/segment.h：
 ```c
 extern inline unsigned char get_fs_byte(const char * addr)
 {
@@ -520,12 +525,12 @@ extern inline void put_fs_byte(char val,char *addr)
 ```
 很显然, 通过**put_fs_byte**就可以实现.  
 
-我们可以看到除了get(put)_fs_byte. 还有其他函数, 如 **get(put)_fs_word, get(put)_fs_long**. 其含义看名字就能大概明白, 我们需要**针对不同的数据类型使用不同的调用方法**.
+我们可以看到除了get(put)\_fs\_byte. 还有其他函数, 如 **get(put)\_fs\_word, get(put)\_fs\_long**. 其含义看名字就能大概明白, 我们需要**针对不同的数据类型使用不同的调用方法**.
 
 
 
 
 ## 参考资料
 
-* [Linux 内核0.11 完全注释](http://www.oldlinux.org/download/clk011c-3.0.pdf)
-* [哈尔滨工业大学操作系统实验手册](https://traitorousfc.gitbooks.io/hit-oslab-manual/content/index.html)
+*  [Linux 内核0.11 完全注释](http://www.oldlinux.org/download/clk011c-3.0.pdf) 
+*  [哈尔滨工业大学操作系统实验手册](https://traitorousfc.gitbooks.io/hit-oslab-manual/content/index.html)
