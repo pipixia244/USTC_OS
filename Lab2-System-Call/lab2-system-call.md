@@ -48,7 +48,7 @@
 
 - ##### 上传至文件夹: <font color=red>第二次实验</font>
 
-- ##### 实验截止日期：<font color=red>2020-04-26 23:59</font>
+- ##### 实验截止日期：<font color=red>2020-05-03 23:59</font>
 
 
 ## 实验内容
@@ -201,14 +201,17 @@ int write(int fildes, const char * buf, off_t count); //从buf写count个字符�
 pid_t fork();	//创建进程
 pid_t waitpid(pid_t pid,int* status,int options);	//等待指定pid的子进程结束
 int execl(const char *path, const char *arg, ...);	//根据指定的文件名或目录名找到可执行文件，并用它来取代原调用进程的数据段、代码段和堆栈段，在执行完之后，原调用进程的内容除了进程号外，其他全部被新程序的内容替换了
-
-//Linux 0.11中未提供, 本次实验中需要我们实现的三个函数
-int system(const char* command);	//调用fork()产生子进程，在子进程执行参数command字符串所代表的命令，此命令**执行完后**随即返回原调用的进程
-FILE* popen(const char* command, const char* mode);	//popen函数先执行fork，然后调用exec以执行command，并且根据mode的值（"r"或"w"）返回一个指向子进程的stdout或指向stdin的文件指针
-int pclose(FILE* stream);	//关闭标准I/O流，等待命令执行结束，与popen对应
 ```
 
-#### 2、利用上面的函数实现一个简单的shell程序
+#### 2、使用上述系统调用实现三个进程创建相关的函数
+```c
+//Linux 0.11中未提供, 本次实验中需要我们实现的三个函数
+int os_system(const char* command);	//调用fork()产生子进程，在子进程执行参数command字符串所代表的命令，此命令**执行完后**随即返回原调用的进程
+int os_popen(const char* command, const char mode);	//popen函数先执行fork，然后调用exec以执行command，并且根据mode的值（'r'或'w'）返回一个指向子进程的stdout或指向stdin的文件指针
+int os_pclose(const int pno);	//关闭标准I/O流，等待命令执行结束，与popen对应
+```
+
+#### 3、利用上面的函数实现一个简单的shell程序
 
 - **实现如下功能的shell：**
 
@@ -238,21 +241,21 @@ int pclose(FILE* stream);	//关闭标准I/O流，等待命令执行结束，与p
   
   - 对输入命令按";"做划分的parseCmd()
   - 对输入命令按"|"做划分的main函数部分
-  - popen、system两个函数的大致框架(这里命名为os_popen和os_system，os_pclose已给出完整代码)
-    - 注：为了简化实验难度，实验中实现的os_popen返回值为int类型的文件描述符(file descriptor)，可直接供系统调用read、write使用
+  - os_popen、os_system两个函数的大致框架，os_pclose已给出完整代码
+    - 注：实验中实现的os_popen返回值为int类型的文件描述符(file descriptor)，可直接供系统调用read、write使用
   - shell程序的大致框架
 - 注：在给出的代码框架中，只**在标明序号的地方添加内容**就可以完成实验。其他部分代码的修改也是可以的，但没必要；全部代码自己写也可以，只要能够**满足上述功能要求和下述实验内容**。
   
 - 所以，在已给出代码的基础上，本部分要做的实验内容为
-  - **实现一般的单条命令执行**，可选实现os_system()并在main函数中引用，或者直接在main函数中实现执行单条命令的过程
-  - **理解pipe系统调用和管道通信**，将执行指令的子进程的标准I/O通过建立管道传输到父进程中并返回给调用者，实现os_popen函数
+  - **实现一般的单条命令执行**，实现os_system()并在main函数中引用 (也可直接在main函数中实现执行单条命令的过程)
+  - **理解pipe系统调用和管道通信**，将执行指令的子进程的标准I/O通过建立管道传输到父进程中并返回给调用者，**实现os_popen函数**
     - 提示：STDOUT_FILENO/STDIN_FILENO为标准I/O的文件描述符，pipe[0]和pipe[1]也是文件描述符，都可作为系统调用read、write的参数使用
-  - 通过调用os_popen，实现shell的管道功能，即先执行"|"前的命令，获取其标准输出，并在执行"|"后的命令时作为标准输入
+  - 通过调用os_popen，**实现shell的管道功能**，即先执行"|"前的命令，获取其标准输出，并在执行"|"后的命令时作为标准输入
   
   - **在Linux0.11下编译通过**并可以满足前述要求
 
 
-#### 3、Linux0.11下的编译与运行
+#### 4、Linux0.11下的编译与运行
 - 建议在主机（如Ubuntu虚拟机）中编译运行测试后再将源代码复制到qemu Linux0.11虚拟机中（使用Lab1第三部分给出的方法）进行编译和运行。
 
   *注：在主机上测试通过可以得到最高80%的分数，Linux0.11下测试通过可拿到最高全部分数。*
@@ -271,7 +274,7 @@ int pclose(FILE* stream);	//关闭标准I/O流，等待命令执行结束，与p
       运行此可执行文件
   4. gcc编译过程中的warning可以暂时忽略，若出现error信息则需要留意(代码中存在错误)
 
-#### 4、提交要求
+#### 5、提交要求
 - 本部分实验报告要求:
   - 大概描述代码添加过程、思路
   - 展示实验结果
