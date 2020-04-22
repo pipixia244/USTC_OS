@@ -60,8 +60,9 @@ int os_popen(const char* cmd, const char type){
         for (i=0;i<max_task;i++)
             if(child_pid[i]>0)
                 close(i);
-        /* 2.3 通过execl系统调用运行命令 */
+        /* 2.3 通过exec系统调用运行命令 */
         execl();
+        /*也可使用execlp execvp等*/
         _exit(127);  
     }  
     /* 3. 父进程部分 */                              
