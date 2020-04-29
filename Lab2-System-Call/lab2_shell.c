@@ -154,7 +154,7 @@ int main() {
     pid_t   pids[MAX_CMD_NUM];
     char    cmdline[MAX_CMDLINE_LENGTH];
     char    cmds[MAX_CMD_NUM][MAX_CMD_LENGTH];
-    char    *buf[4096];
+    char    buf[4096];
     while(1){
         /* 将标准输出文件描述符作为参数传入write，即可实现print */
 	    write(STDOUT_FILENO, "os shell ->", 11);
