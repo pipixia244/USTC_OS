@@ -14,7 +14,7 @@
 
 #define SHELL "/bin/sh"
 
-static int *child_pid = NULL;   /*save running children's pid*/*
+static int *child_pid = NULL;   /*save running children's pid*/
 
 /* popen，输入为命令和类型("r""w")，输出执行命令进程的I/O文件描述符 */
 int os_popen(const char* cmd, const char type){
@@ -57,12 +57,12 @@ int os_popen(const char* cmd, const char type){
             }  
         }  
         /* 关闭所有未关闭的子进程文件描述符（无需修改） */
-        for (i=0;i<max_task;i++)
+        for (i=0;i<NR_TASKS;i++)
             if(child_pid[i]>0)
                 close(i);
         /* 2.3 通过exec系统调用运行命令 */
         execl();
-        /*也可使用execlp execvp等*/
+        /* 也可使用execlp execvp等 */
         _exit(127);  
     }  
     /* 3. 父进程部分 */                              
