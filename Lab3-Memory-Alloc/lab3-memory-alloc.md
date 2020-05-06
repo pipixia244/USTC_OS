@@ -47,7 +47,7 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 隐式空闲链表如图所示
 
-![](./隐式链表.png)
+![](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/implicit-list.png)
 
 图中淡蓝色部分为已分配块，深蓝色为填充块（为了内存双字对齐），数字为块头部，见下节。
 
@@ -61,7 +61,7 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 综上，引入头部后一个内存块的格式如下图所示：
 
-![](./块格式.png)
+![](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/blockformat.png)
 
 块大小包括头部在内，因此<font color="#DC143C">对于一个32字节的内存分配请求，考虑块头部以及内存对齐后，需要为其分配至少40字节的内存块</font>。
 
@@ -92,9 +92,9 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 例如在如图堆中分配一个16字节的块会将中间32字节的块分割成两个
 
-![](./隐式链表.png)
+![](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/implicit-list.png)
 
-![](./分割后.png)
+![](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/segmented.png)
 
 ### 合并空闲块
 
@@ -110,7 +110,7 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 添加脚部以后，块的格式如图所示：
 
-![](./脚部.png)
+![](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/footer.png)
 
 #### 合并步骤
 
@@ -123,7 +123,7 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 以下为这四种情况的合并前后示意图
 
-![](./合并.png)
+![](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/merge.png)
 
 图中m/n表示块大小，a表示已分配，f表示未分配。即根据合并结果修改当前块的头/脚部元数据。
 
@@ -139,7 +139,7 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 以下为该实现中堆内存的组织方式示意图。
 
-![隐式空闲链表的恒定形式](./隐式空闲链表的恒定形式.png)
+![隐式空闲链表的恒定形式](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/implicit-format.png)
 
 堆内存中第一个字是一个为了内存对齐的填充字。填充字后面紧跟一个特殊的序言块，它是一个8字节的已分配块，只由一个头部和一个脚部组成。序言块是在初始化时创建的，并且永不释放。序言块后面是普通块。堆的最后一个字是一个特殊的结尾块，它是一个有效大小为0的已分配块，只由一个头部组成。
 
@@ -153,7 +153,7 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 分配器实现会涉及大量的指针操作，包括从地址取值/赋值，查找块头/块脚地址等。为了方便操作以及保障操作性能，定义如下宏操作。
 
-![宏](./宏.png)
+![宏](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/macro.png)
 
 - 针对32位系统，定义字长位4byte（WSIZE）。
 - CHUNKSIZE为内存分配器扩充堆内存的最小单元。
@@ -168,11 +168,11 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 在开始调用malloc分配内存前，需要先调用mm_init函数初始化分配器，其主要工作是分配初始堆内存，分配序言块和尾块，以及初始化空闲链表。如下代码所示。
 
-![初始化堆](./初始化.png)
+![初始化堆](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/init.png)
 
 <br/>
 
-![扩展](./扩展.png)
+![扩展](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/extend.png)
 
 mm_init函数首先通过sbrk请求4个字的内存(line4~5)，然后将这四个字分别作为填充块（为了对齐），序言块头/脚部，尾块。并将heap_listp指针指向序言块使其作为链表的第一个节点(line6~10)。之后调用extend_heap函数向系统申请一个CHUNKSIZE的内存作为堆的初始内存(line13~14)。
 
@@ -191,13 +191,13 @@ coalesce函数首先从前一块的脚部后后一块的头部获取它们的分
 
 由于序言块和尾块的存在，不需要考虑边界条件。
 
-![释放/合并代码](./释放与合并.png)
+![释放/合并代码](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/release-merge.png)
 
 #### 分配块
 
 最后介绍mm_malloc函数，向堆申请size大小的内存并返回指针。
 
-![分配](./分配.png)
+![分配](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/alloc.png)
 
 首先将申请内存大小加上块头/尾部大小并进行对齐(line12~15)，然后调用find_fit函数(想想怎么实现)从内存块链表中找到合适的块，如果成功找到则调用place函数判断是否需要对该块作分割操作(line18~21)。
 
@@ -218,7 +218,7 @@ coalesce函数首先从前一块的脚部后后一块的头部获取它们的分
 ### 块的格式
 实际实现中通常将空闲块组织成某种形式的显式数据结构（如，链表）。由于空闲块的空间是不用的，所以实现链表的指针可以存放在空闲块的主体里。例如，将堆组织成一个双向的空闲链表，在每个空闲块中，都包含一个pred（前驱）和succ（后继）指针，如下图所示：
 
-![使用双向空闲链表组织的堆块格式](./显式链表-分配块-空闲块示例.png)
+![使用双向空闲链表组织的堆块格式](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/explict-example.png)
 
 对比隐式空闲链表，双向空闲链表的方式使首次适配的分配时间由块总数的线性时间减少到空闲块数量的线性时间，因为它不需要搜索整个堆，而只是需要搜索空闲链表即可。
 
@@ -290,7 +290,7 @@ coalesce函数首先从前一块的脚部后后一块的头部获取它们的分
 make #编译，执行后可以看到生成了一个名为mdriver的可执行文件
 ```
 
-![make](./make.png)
+![make](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/make.png)
 
 ```shell
 #实验中，我们主要用到mdriver的如下功能：
@@ -306,7 +306,7 @@ trace列表示测试用例的编号；valid列表示运行结果是否正确；u
 
 （注意：如果有用例测试没通过，即某行trace的valid列值为"no"，则为0分）
 
-![./mdriver -v执行结果](./运行代码.png)
+![./mdriver -v执行结果](https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/picture/run-example.png)
 
 ### 评分标准
 
