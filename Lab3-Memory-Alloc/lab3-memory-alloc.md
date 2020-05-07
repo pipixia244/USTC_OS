@@ -5,8 +5,8 @@
 ## 一、实验目的
 
 * 使用隐式空闲链表实现一个32位堆内存分配器
-* 掌握Makefile文件的基本操作
-* 使用显示空闲链表实现一个32为堆内存分配器(进阶)
+* 掌握Makefile的基本写法
+* 使用显式空闲链表实现一个32位堆内存分配器(进阶)
 
 ## 二、实验环境
 
@@ -16,9 +16,9 @@
 
 * 需要工具：gcc qemu  （本次实现以实验一为基础，如有不熟悉的步骤，请浏览实验一文档）
 
-  **注意**： 1、Linux 0.11内核注释支持/*   注释内容  */,不支持//  注释内容  这种注释
+  **注意**： 1、在Linux 0.11 环境下编程，注释 <font color="red">**仅支持**</font> **/*   注释内容  */**,  <font color="red">**不支持 **</font> **//  注释内容**  
 
-  ​			 2、Linux 0.11 局部变量必须在函数最开始就声明，否则会报错
+  ​			 2、Linux 0.11 局部变量必须在**函数最开始**就声明，否则会报错
 
 ## 三、实验要求
 
@@ -26,7 +26,7 @@
 
 ##### 任务一：补全隐式空闲链表的实现
 
-- 在下面文档讲解隐式空闲链表的过程中，已经提供并分析了隐式链表的代码实现，所以你只需要将其抄到mm.c 文件中，并补全部分函数即可。待补全的函数如下： 
+- 在下面文档讲解隐式空闲链表的过程中，已经提供并分析了隐式链表的代码实现，所以你只需要在mm.c 文件中**补全部分函数**即可。待补全的函数如下： 
 
   - static void *find_fit(size_t asize)
     - 针对某个内存分配请求，该函数在隐式空闲链表中执行首次适配搜索。
@@ -40,8 +40,8 @@
     - 释放空闲块时，判断相邻块是否空闲，合并空闲块
     - 根据相邻块的的分配状态，有如下四种不同情况（具体参见合并步骤这一节）
     - 需补充第四种情况：前后块都空闲
-- 编写makefile文件编译运行
-    - 需要在mm.c 中填入自己的代码，trace目录下为测试用例
+- 编写Makefile文件编译运行
+    - 在mm.c 中补全代码，trace目录下为测试用例
     - 修改Makefile文件
     - 使用Makefile文件编译项目，main函数在mmdriver.c文件中，主要用于测试
     - 使用以下命令编译运行程序
@@ -61,7 +61,7 @@
     - 必须实现块的合并与分裂。 
     - 空闲链表采用后进先出的排序策略：将新释放的块放置在链表的开始处。 
     - 适配方式采用首次适配
-  - 编写makefile文件编译运行
+  - 编写Makefile文件编译运行
     - 需要在ep_mm.c 中填入自己的代码，trace目录下为测试用例
     - 修改Makefile文件
     - 使用Makefile文件编译项目，main函数在mmdriver.c文件中，主要用于测试
@@ -76,7 +76,7 @@
 
 #### 2、提交要求
 
-- 本次实验要求提交实验录屏、实验报告和代码
+- 本次实验要求提交**实验录屏、实验报告和代码**
 - 按照下面描述的方式组织相关文件（具体的实验报告和录屏的要求见实验内容部分）
 
 ```HTML
@@ -100,17 +100,19 @@
 
 #### 4、评分标准
 
-- 得分由三部分构成：
+- **得分由三部分构成**：
      1. 隐式链表实验代码运行结果（录屏和代码源文件）;
      1. 显示链表实验代码运行结果（录屏和代码源文件）;
      1. malloc待补充代码解析实验报告(隐式和显示实现)。
-- 隐式链表实现代码运行结果正确和实验代码解析报告完整，最高可得7分
-- 显示链表实现代码运行结果正确和实验代码解析报告完整，最高可得10分（进阶）
+- 隐式链表实现代码运行结果正确和实验代码解析报告完整，<font color = red>**最高可得7分**</font>
+- 显示链表实现代码运行结果正确和实验代码解析报告完整，<font color = red>**最高可得10分（进阶）**</font>
 
 ## 四、实验内容
 实验源码下载:<font color = red>url</font>
 
 #### 1. API简介
+
+##### (1) C标准库中的堆内存分配函数介绍
 
 malloc/free是c标准库函数，用于从堆中分配内存。
 
@@ -135,74 +137,81 @@ void free(void *ptr);
 free函数释放ptr指向的内存块，释放出的内存可以在之后的malloc调用中被使用。
 注意：ptr必须指向由malloc、calloc、realloc分配的内存块的起始位置。
 
--  memlib.c - a module that simulates the memory system.  Needed because it allows us to interleave calls from the student's malloc package with the system's malloc package in libc.
-- 部分主要函数和声明如下所示
+##### (2) 本次实验中的相关代码简介
 
-```c
-/* private variables */
-static char *mem_start_brk;  /* points to first byte of heap */
-static char *mem_brk;        /* points to last byte of heap */
-static char *mem_max_addr;   /* largest legal heap address */ 
+- memlib.c - 模拟内存系统的模块，主要通过libc中malloc分配一段内存空间，用于模拟系统内存空间申请空间并实现堆栈的管理
+  - 部分主要函数和声明如下所示：
 
-/* 
- * mem_init - initialize the memory system model
- * memlib.c
- * 通过系统malloc申请5Mb的空间用于模拟
- */
-void mem_init(void)
-{
-    /* allocate the storage we will use to model the available VM */
-    if ((mem_start_brk = (char *)malloc(MAX_HEAP)) == NULL) {
-	fprintf(stderr, "mem_init_vm: malloc error\n");
-	exit(1);
-    }
+   * ```c
+   /* private variables */
+  static char *mem_start_brk;  /* points to first byte of heap */
+  static char *mem_brk;        /* points to last byte of heap */
+      static char *mem_max_addr;   /* largest legal heap address */ 
+      
+  	/* 
+  	 * mem_init - initialize the memory system model
+       * memlib.c
+   * 通过系统malloc申请5Mb的空间用于模拟
+         */
+      void mem_init(void)
+  {
+       /* allocate the storage we will use to model the available VM */
+       if ((mem_start_brk = (char *)malloc(MAX_HEAP)) == NULL) {
+           fprintf(stderr, "mem_init_vm: malloc error\n");
+           exit(1);
+       }
+   
+       mem_max_addr = mem_start_brk + MAX_HEAP;  /* max legal heap address */
+       mem_brk = mem_start_brk;                  /* heap is empty initially */
+   }
+   ```
+   
+  * mem_init介绍：
 
-    mem_max_addr = mem_start_brk + MAX_HEAP;  /* max legal heap address */
-    mem_brk = mem_start_brk;                  /* heap is empty initially */
-}
+      * 通过libc中malloc分配一段内存空间，主要用于模拟系统空间，空间大小为5MB，
+      * 自己实现的malloc函数主要在模拟系统内存空间申请空间并实现堆栈的管理
+      * 其中mem_brk指向自己实现的malloc空间的堆顶
+      * <img src="./picture/memlibc1.jpg" style="zoom:67%;" />
 
-```
+  * mem_brk介绍：
 
-- 通过libc中malloc分配一段内存空间，主要用于模拟系统空间，空间大小为5MB，
-- 自我实现的malloc函数主要在模拟系统内存空间申请空间并实现堆栈的管理
-- 其中mem_brk指向自我实现的malloc空间的堆顶
+       * ```c
+         /* 
+         
+          * mem_sbrk - simple model of the sbrk function. Extends the heap 
+         
+          * by incr bytes and returns the start address of the new area. In
+         
+          * this model, the heap cannot be shrunk.
+             */
+         void *mem_sbrk(int incr) 
+         {
+            char *old_brk = mem_brk;
+         
+            if ( (incr < 0) || ((mem_brk + incr) > mem_max_addr)) {
+                errno = ENOMEM;
+                fprintf(stderr, "ERROR: mem_sbrk failed. Ran out of memory...\n");
+                return (void *)-1;
+            }
+            mem_brk += incr;
+            return (void *)old_brk;
+         }
+         ```
 
-![](./picture/memlibc1.jpg)
-
-```c
-
-/* 
- * mem_sbrk - simple model of the sbrk function. Extends the heap 
- *    by incr bytes and returns the start address of the new area. In
- *    this model, the heap cannot be shrunk.
- */
-void *mem_sbrk(int incr) 
-{
-    char *old_brk = mem_brk;
-
-    if ( (incr < 0) || ((mem_brk + incr) > mem_max_addr)) {
-	errno = ENOMEM;
-	fprintf(stderr, "ERROR: mem_sbrk failed. Ran out of memory...\n");
-	return (void *)-1;
-    }
-    mem_brk += incr;
-    return (void *)old_brk;
-}
-
-```
+- mmdriver.c: 测试相关代码
+- mm.c，ep_mm.c：隐式和显式空闲链表的实现代码，在下文中展开介绍
 
 #### 2. 隐式空闲链表管理
 
 这里通过一种简单的堆内存管理方式，隐式空闲链表，为例来讲解内存分配器的实现。
-隐式空闲链表将堆中的内存块按地址顺序串成一个链表，接受到内存分配请求时，分配器遍历该链表来找到合适的空 闲内存块并返回。
-当找不到合适的空闲内存块时（如：堆内存不足，或没有大小足够的空闲内存块），调用sbrk向堆顶扩展更多的内 存。
-隐式空闲链表如图所示
+
+隐式空闲链表将堆中的内存块按地址顺序串成一个链表，接受到内存分配请求时，分配器遍历该链表来找到合适的空 闲内存块并返回。当找不到合适的空闲内存块时（如：堆内存不足，或没有大小足够的空闲内存块），调用sbrk向堆顶扩展更多的内 存。隐式空闲链表如下图所示：
 
 ![](./picture/隐式链表.png)
 
-图中淡蓝色部分为已分配块，深蓝色为填充块（为了内存双字对齐），数字为块头部，见下节。
+图中淡蓝色部分为已分配块，深蓝色为填充块（为了内存双字对齐），数字为块头部，见下节。（图中链表指针指向块的起始处，实际实现时是<font color="#DC143C">指向块头部后面一个字，即有效载荷地址</font>，见下节图）
 
-（图中链表指针指向块的起始处，实际实现时是<font color="#DC143C">指向块头部后面一个字，即有效载荷地址</font>，见下节图）
+下面分析如何实现隐式空闲链表管理
 
 ##### 2.1 块头部
 
@@ -212,7 +221,7 @@ void *mem_sbrk(int incr)
 
 综上，引入头部后一个内存块的格式如下图所示：
 
-![](./picture/块格式.png)
+<img src="./picture/块格式.png" style="zoom:50%;" />
 
 块大小包括头部在内，因此<font color="#DC143C">对于一个32字节的内存分配请求，考虑块头部以及内存对齐后，需要为其分配至少40字节的内存块</font>。
 
@@ -316,11 +325,7 @@ static void *extend_heap(size_t words)
 
 > 注意 : 这里实际操作是将扩展前的尾块作为了新空闲块的头块，然后在新的堆末尾分配一个新的尾块。
 
-![1588778307742](./picture/memlibc2)
-
-![1588778357952](./picture/memlibc3)
-
-![1588778413923](./picture/memlibc4)
+<img src="./picture/memlibc2" alt="1588778307742" style="zoom: 40%;" /><img src="./picture/memlibc3" alt="1588778357952" style="zoom: 40%;" /><img src="./picture/memlibc4" alt="1588778413923" style="zoom:40%;" />
 
 其中Mymalloc堆内存内部组织格式如下图：
 
@@ -433,7 +438,7 @@ void mm_free(void *ptr)
 
 添加脚部以后，块的格式如图所示：
 
-![](./picture/脚部.png)
+<img src="./picture/脚部.png" style="zoom: 67%;" />
 
 ##### 2.8 合并步骤
 
@@ -446,7 +451,7 @@ void mm_free(void *ptr)
 
 以下为这四种情况的合并前后示意图
 
-![](./picture/合并.png)
+<img src="./picture/合并.png" style="zoom: 50%;" />
 
 图中m/n表示块大小，a表示已分配，f表示未分配。即根据合并结果修改当前块的头/脚部元数据。
 
@@ -597,7 +602,7 @@ clean:
 	rm -f *~ *.o mmdrive
 ```
 
-补充上述Makefile文件(参考下述学习资料)
+<font color = red>补充上述Makefile文件</font>(参考下述学习资料)
 
 - [Makefile入门学习](<https://seisman.github.io/how-to-write-makefile/introduction.html>)
 
@@ -621,7 +626,7 @@ $  ./mmdriver
 
 实际实现中通常将空闲块组织成某种形式的显式数据结构（如，链表）。由于空闲块的空间是不用的，所以实现链表的指针可以存放在空闲块的主体里。例如，将堆组织成一个双向的空闲链表，在每个空闲块中，都包含一个pred（前驱）和succ（后继）指针，如下图所示：
 
-![使用双向空闲链表组织的堆块格式](./picture/显式链表-分配块-空闲块示例.png)
+<img src="./picture/显式链表-分配块-空闲块示例.png" alt="使用双向空闲链表组织的堆块格式" style="zoom:50%;" />
 
 对比隐式空闲链表，双向空闲链表的方式使首次适配的分配时间由块总数的线性时间减少到空闲块数量的线性时间，因为它不需要搜索整个堆，而只是需要搜索空闲链表即可。
 
@@ -648,7 +653,7 @@ $  ./mmdriver
 - 合并分割的思想与隐式空闲链表时的分析一致，只是在代码实现方式上不同。
 - 注意：分割合并块时，一定要保证操作前和操作后所有块在空闲链表中不会互相覆盖。
 
-##### 3.3 显示链表实验要求（<font color = red>进阶-3分</font>）
+##### 3.3 显示链表实验要求（<font color = red>进阶: 3分</font>）
 
 - 补全find_fit()和place()函数代码,并在<font color =red>实验报告分析函数实现代码</font>
 
