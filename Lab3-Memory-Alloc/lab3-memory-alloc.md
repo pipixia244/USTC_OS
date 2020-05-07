@@ -114,6 +114,8 @@ $ wget https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/lab
 $ tar zxf lab3_malloc.tar.gz
 ```
 
+注：如果下载出现问题，可以下载分享到群里的文件，或者用网上提供的github代理下载服务。
+
 #### 1. API简介
 
 ##### (1) 本次实验中的相关代码简介
