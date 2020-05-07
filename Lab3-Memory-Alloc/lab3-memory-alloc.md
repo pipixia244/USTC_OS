@@ -1,106 +1,198 @@
 # 实验三
 
-# 动态内存分配器的实现
+# 动态内存分配器malloc的实现
 
-## 实验目标
+## 实验目的
 
-使用显示空闲链表实现一个32位系统堆内存分配器。
-
-以下讲解均基于32位系统。
+* 使用隐式空闲链表实现一个32位堆内存分配器
+* 掌握Makefile文件的基本操作
+* 使用显示空闲链表实现一个32为堆内存分配器(进阶)
 
 ## 实验环境
 
-* OS：Ubuntu 18.04 
+* OS：Ubuntu 18.04LTS 
+
 * Linux内核版本：Kernel 0.11
-* **请大家留意加粗的内容**
 
-## 提交要求
+* 需要工具：gcc qemu  （本次实现以实验一为基础，如有不熟悉的步骤，请浏览实验一文档）
 
-#### 1、本次实验要求提交<font color=red>**实验录屏、实验报告和代码**</font>
+  **注意**： 1、Linux 0.11内核注释支持/*   注释内容  */,不支持//  注释内容  这种注释
 
-- **将实验报告、源代码打包为压缩包提交。**
+  ​			 2、Linux 0.11 局部变量必须在函数最开始就声明，否则会报错
 
-  - 本次实验只要求修改mm.c文件，不能修改其他文件，所以源代码只提交mm.c文件即可。
+## 实验要求
 
-- ##### 按下面描述的方式组织相关文件（具体的实验报告和录屏的要求见实验内容部分）
+#### 1、实验任务
 
-  ```markdown
-  - 顶层目录（可自行命令，如EXP2）
-    - EXP2.1 子目录1
-      - linux (Linux 0.11 修改源码文件夹, 名字为linux)
-        - kernal 文件夹
-        - include 文件夹
-      - 测试程序(test.c)
-      - HDC中usr/include/unistd.h 文件
-      - 2.1实验录屏(2分钟之内)
-    - EXP2.2 子目录2
-      - lab2_shell.c
-      - 2.2实验录屏(4分钟之内)
-    - 实验报告(学号+姓名+实验二命名, 提交PDF版本)
-  ```
+##### 任务一：补全隐式空闲链表的实现
 
-* ##### 将上述文件压缩
+- 在下面文档讲解隐式空闲链表的过程中，已经提供并分析了隐式链表的代码实现，所以你只需要将其抄到mm.c 文件中，并补全部分函数即可。待补全的函数如下： 
 
-  - 格式为 .7z/.rar/.zip
-  - 命名格式为 <font color=red>学号\_姓名\_实验2</font>，如果上传后需要修改，由于ftp服务器关闭了覆盖写入功能，需要将文件重新命名为<font color=red>学号\_姓名\_实验2\_修改n</font> (n为修改版本)，以最后修改版本为准。
-    - 如PB10001000\_张三\_实验2.zip  , PB10001000\_张三\_实验2_修改3.zip  
+  - static void *find_fit(size_t asize)
+    - 针对某个内存分配请求，该函数在隐式空闲链表中执行首次适配搜索。
+    -  参数asize表示请求块的大小。 返回值为满足要求的空闲块的地址。
+    - 若为NULL，表示当前堆块中没有满足要求的空闲块。 
+  - static void place (void *bp, size_t asize)
+    - 该函数将请求块放置在空闲块的起始位置。
+    - 只有当剩余部分大于等于最小块的大小时，才进行块分割。 
+    - 参数bp表示空闲块的地址。参数asize表示请求块的大小。
+  - static void *coalesce(void *bp)
+    - 释放空闲块时，判断相邻块是否空闲，合并空闲块
+    - 根据相邻块的的分配状态，有如下四种不同情况（具体参见合并步骤这一节）
+    - 需补充第四种情况：前后块都空闲
 
-#### 2、提交到ftp服务器
+  ##### 任务二：编写makefile文件编译运行
 
-- ##### 服务器地址：[ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/](ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/)
+  - 需要在mm.c/ep_mm.c 中填入自己的代码，trace目录下为测试用例
 
-- ##### 上传至文件夹: <font color=red>第二次实验</font>
+  - 使用makefile文件编译项目，main函数在mmdriver.c文件中，主要用于测试
 
-- ##### 实验截止日期：<font color=red>2020-05-03 23:59</font>
+  - 使用以下命令编译运行程序
+
+    ```shell
+    #进入源代码目录
+    #编译，执行后可以看到生成了一个名为mdriver的可执行文件
+    $ make
+    $ ./mmdriver
+    ```
+
+  ##### 任务三：显式空闲链表的实现 （进阶）
+
+  - 实验要求：
+    - 基于显式空闲链表实现块的分配和释放。 
+    - 分配块没有脚部，空闲块有脚部。
+    - 必须实现块的合并与分裂。 
+    - 空闲链表采用后进先出的排序策略：将新释放的块放置在链表的开始处。 
+    - 适配方式采用首次适配
+
+
+#### 2、提交要求
+
+- 本次实验要求提交实验录屏、实验报告和代码
+- 按照下面描述的方式组织相关文件（具体的实验报告和录屏的要求见实验内容部分）
+
+```HTML
+- 顶层目录（命名为lab3）
+	- mm.c
+	- ep_mm.c
+	- Makefile
+	- 实验录屏（5分钟之内）
+	- 实验报告（学号+姓名+lab3,提交PDF版本）
+```
+
+- 将上述文件压缩
+  - 格式为.7z/rar/zip
+  - 命名格式为 <font color = red>学号\_姓名\_实验3</font>，如果上传后需要修改，由于ftp服务器关闭了覆盖写入功能， 需要将文件重新命名为<font color = red>学号\_姓名\_实验3_修改n</font> (n为修改版本)，以后修改版本为准
+
+#### 3、上传视频至ftp服务器
+
+- 服务器地址：[ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/](ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/)
+- 上传至文件夹: **第三次实验**
+- 实验截止日期：<font color = red size = 6>xxxx-xx-xx  xx:xx</font>
+
+#### 4、评分标准
+
+- 得分由三部分构成： 1、隐式链表实验代码运行结果（录屏和代码源文件）、2、malloc待补充代码解析实验报告(隐式和显示实现)、3、显示链表实验代码运行结果（录屏和代码源文件）
+- 隐式链表实现代码运行结果正确和实验代码解析报告完整，最高可得7分
+- 显示链表实现代码运行结果正确和实验代码解析报告完整，最高可得10分（进阶）
 
 ## 实验内容
 
-### 一、API简介
+#### 一、API简介
 
 malloc/free是c标准库函数，用于从堆中分配内存。
 
-```C
+```c
 void* malloc(size_t size);
 ```
 
 malloc函数返回一个指针，指向大小至少为size字节的空闲内存块。
 
-<font color="#DC143C">返回的内存块首地址是双字对齐的，即：在64位系统中地址为16的倍数，32位系统中为8的倍数。</font>
+<font color =red>返回的内存块首地址是双字对齐的，即：在64位系统中地址为16的倍数，32位系统中为8的倍数。</font>
 
-```C
+```c
 void *sbrk(intptr_t incr);
 ```
 
-进程的堆内存是有限的，内核维护一个指针brk指向当前堆顶。
+当堆中剩余内存不足以响应malloc请求时，需要向操作系统申请更多的堆内存。sbrk函数通过将brk指针增加incr来 扩展和收缩堆（即当incr为负数时收缩堆）。成功时返回旧brk的地址（因此扩展堆后返回值指向一块大小为incr的空 闲内存），失败时返回-1。
 
-当堆中剩余内存不足以响应malloc请求时，需要向操作系统申请更多的堆内存。sbrk函数通过将brk指针增加incr来扩展和收缩堆（即当incr为负数时收缩堆）。成功时返回旧brk的地址（因此扩展堆后返回值指向一块大小为incr的空闲内存），失败时返回-1。
-
-```C
+```c
 void free(void *ptr);
 ```
 
 free函数释放ptr指向的内存块，释放出的内存可以在之后的malloc调用中被使用。
-
 注意：ptr必须指向由malloc、calloc、realloc分配的内存块的起始位置。
 
+-  memlib.c - a module that simulates the memory system.  Needed because it allows us to interleave calls from the student's malloc package with the system's malloc package in libc.
+- 部分主要函数和声明如下所示
 
-### 二、示例：隐式空闲链表管理
+```c
+/* private variables */
+static char *mem_start_brk;  /* points to first byte of heap */
+static char *mem_brk;        /* points to last byte of heap */
+static char *mem_max_addr;   /* largest legal heap address */ 
+
+/* 
+ * mem_init - initialize the memory system model
+ * memlib.c
+ * 通过系统malloc申请5Mb的空间用于模拟
+ */
+void mem_init(void)
+{
+    /* allocate the storage we will use to model the available VM */
+    if ((mem_start_brk = (char *)malloc(MAX_HEAP)) == NULL) {
+	fprintf(stderr, "mem_init_vm: malloc error\n");
+	exit(1);
+    }
+
+    mem_max_addr = mem_start_brk + MAX_HEAP;  /* max legal heap address */
+    mem_brk = mem_start_brk;                  /* heap is empty initially */
+}
+
+```
+
+- 通过libc中malloc分配一段内存空间，主要用于模拟系统空间，空间大小为5MB，
+- 自我实现的malloc函数主要在模拟系统内存空间申请空间并实现堆栈的管理
+- 其中mem_brk指向自我实现的malloc空间的堆顶
+
+![](./picture/memlibc1.jpg)
+
+```c
+
+/* 
+ * mem_sbrk - simple model of the sbrk function. Extends the heap 
+ *    by incr bytes and returns the start address of the new area. In
+ *    this model, the heap cannot be shrunk.
+ */
+void *mem_sbrk(int incr) 
+{
+    char *old_brk = mem_brk;
+
+    if ( (incr < 0) || ((mem_brk + incr) > mem_max_addr)) {
+	errno = ENOMEM;
+	fprintf(stderr, "ERROR: mem_sbrk failed. Ran out of memory...\n");
+	return (void *)-1;
+    }
+    mem_brk += incr;
+    return (void *)old_brk;
+}
+
+```
+
+#### 二、隐式空闲链表管理
 
 这里通过一种简单的堆内存管理方式，隐式空闲链表，为例来讲解内存分配器的实现。
-
-隐式空闲链表将堆中的内存块按地址顺序串成一个链表，接受到内存分配请求时，分配器遍历该链表来找到合适的空闲内存块并返回。
-
-当找不到合适的空闲内存块时（如：堆内存不足，或没有大小足够的空闲内存块），调用sbrk向堆顶扩展更多的内存。
-
+隐式空闲链表将堆中的内存块按地址顺序串成一个链表，接受到内存分配请求时，分配器遍历该链表来找到合适的空 闲内存块并返回。
+当找不到合适的空闲内存块时（如：堆内存不足，或没有大小足够的空闲内存块），调用sbrk向堆顶扩展更多的内 存。
 隐式空闲链表如图所示
 
-![](./picture/implicit-list.png)
+![](./picture/隐式链表.png)
 
 图中淡蓝色部分为已分配块，深蓝色为填充块（为了内存双字对齐），数字为块头部，见下节。
 
 （图中链表指针指向块的起始处，实际实现时是<font color="#DC143C">指向块头部后面一个字，即有效载荷地址</font>，见下节图）
 
-#### 1、块头部
+#### 块头部
 
 堆中的各内存块需要某种标志来区分块的边界，记录块的大小，以及标记该内存块是否已被使用。因此为每个内存块保留一个字（4字节）的头部记录这些数据。
 
@@ -108,17 +200,141 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 综上，引入头部后一个内存块的格式如下图所示：
 
-![](./picture/blockformat.png)
+![](./picture/块格式.png)
 
 块大小包括头部在内，因此<font color="#DC143C">对于一个32字节的内存分配请求，考虑块头部以及内存对齐后，需要为其分配至少40字节的内存块</font>。
 
-#### 2、链表管理
+其中分配器实现会涉及大量的指针操作，包括从地址取值/赋值，查找块头/块脚地址等。为了方便操作以及保障操作性能，定义如下宏操作。
+
+```c
+/* Basic constants and macros */
+#define WSIZE 4				/* Word and header/fonter size(bytes) */
+#define DSIZE 8				/* Double word size(bytes) */
+#define CHUNKSIZE (1 << 12)	 /* Extend heap by this amount (bytes) */
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+/* Pack a size and allocated bit into a word */
+#define PACK(size, alloc) ((size) | (alloc))
+
+/* Read and write a word at address p */
+#define GET(p) (*(unsigned int *)(p))
+#define PUT(p, val) (*(unsigned int *)(p) = (val))
+
+/* Read the size and allocated fields from address p */
+#define GET_SIZE(p) (GET(p) & ~0x7)
+#define GET_ALLOC(p) (GET(p) & 0x1)
+
+/* Given block ptr bp, compute address of it's header and footer */
+#define HDRP(bp) ((char *)(bp)-WSIZE)
+#define FTRP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
+
+/* Given block ptr bp, compute address of next and previous blocks */
+#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp)-WSIZE)))
+#define PREV_BLKP(bp) ((char *)(bp)-GET_SIZE(((char *)(bp)-DSIZE)))
+/* Used for the sp place() function */ 
+#define MIN_BLK_SIZE (2 * DSIZE)
+```
+
+- 针对32位系统，定义字长位4byte（WSIZE）
+- CHUNKSIZE为内存分配器扩充堆内存的最小单元
+- PACK将块大小和分配位结合返回一个值（即将size的最低位赋值为分配位）
+- GET/PUT分别对指针p指向的位置取值/赋值
+- GET_SIZE/GET_ALLOC分别从p指向位置获取块大小和分配位。<font color="#DC143C">注意：p应该指向头/脚部</font>
+- HDRP/FTRP返回bp指向块的头/脚部
+- NEXT_BLKP/PREV_BLKP返回与bp相邻的下一/上一块
+
+##### 初始化分配器
+
+在开始调用malloc分配内存前，需要先调用mm_init函数初始化分配器，其主要工作是分配初始堆内存，分配序言块和尾块，以及初始化空闲链表，如下代码所示。
+
+```c
+/* 
+ * mm_init - initialize the malloc package.
+ */
+int mm_init(void)
+{
+    /* 首先通过mem_sbrk请求4个字的内存(模拟sbrk) */
+    if ((heap_listp = mem_sbrk(4 * WSIZE)) == (void *)-1)
+        return -1;
+    /* 调用mem_sbrk模拟系统空间和mymalloc堆栈变化见下面图一*/
+    /* 	这四个字分别作为填充块（为了对齐）
+     *	序言块头/脚部，尾块
+     *	并将heap_listp指针指向序言块使其作为链表的第一个节点
+     */
+    PUT(heap_listp, 0);
+    PUT(heap_listp + (1 * WSIZE), PACK(DSIZE, 1));
+    PUT(heap_listp + (2 * WSIZE), PACK(DSIZE, 1));
+    PUT(heap_listp + (3 * WSIZE), PACK(0, 1));
+    heap_listp += (2 * WSIZE);
+	/* mymalloc堆栈指针heap_listp变化见下面图二*/
+    /* Extend the empty head with a free block of CHUNKSIZE bytes (4Kb) 
+     * 调用extend_heap函数向系统申请一个CHUNKSIZE的内存作为堆的初始内存
+     */
+    if (extend_heap(CHUNKSIZE / WSIZE) == NULL)
+        return -1;
+    /* 调用extend_heap()模拟系统空间和mymalloc堆栈变化见下面图三*/
+    return 0;
+}
+
+
+```
+
+```c
+/* extend_heap函数是对mem_sbrk的一层封装，接收的参数是要分配的字数，
+ * 在堆初始化以及malloc找不到合适内存块时使用。
+ * 它首先对请求大小进行地址对齐，然后调用mem_sbrk获取空间
+ */
+static void *extend_heap(size_t words)
+{
+    char *bp;
+    size_t size;
+    /* Allocate an even number of words to maintain alignment */
+    size = (words % 2) ? (words + 1) * WSIZE : words * WSIZE;
+    if ((long)(bp = mem_sbrk(size)) == -1)
+        return NULL;
+    /* Initialize free block header/footer and the epilogue header */
+    PUT(HDRP(bp), PACK(size, 0));
+    PUT(FTRP(bp), PACK(size, 0));
+    PUT(HDRP(NEXT_BLKP(bp)), PACK(0, 1));
+    
+    /* Coalesce if the previous block was free */
+    return coalesce(bp);
+}
+```
+
+> 注意 : 这里实际操作是将扩展前的尾块作为了新空闲块的头块，然后在新的堆末尾分配一个新的尾块。
+
+![1588778307742](./picture/memlibc2)
+
+![1588778357952](./picture/memlibc3)
+
+![1588778413923](./picture/memlibc4)
+
+其中Mymalloc堆内存内部组织格式如下图：
+
+![隐式空闲链表的恒定形式](./picture/隐式空闲链表的恒定形式.png)
+
+堆内存中第一个字是一个为了内存对齐的填充字。填充字后面紧跟一个特殊的序言块，它是一个8字节的已分配块， 只由一个头部和一个脚部组成。序言块是在初始化时创建的，并且永不释放。序言块后面是普通块。堆的最后一个字 是一个特殊的结尾块，它是一个有效大小为0的已分配块，只由一个头部组成。
+序言块和结尾块的作用是消除空闲块合并时的边界检查，在后续代码中可以看到。
+分配器使用一个私有全局变量heap_listp表示链表头，它总是指向序言块。
+
+##### 链表管理
 
 在隐式链表管理方案下，分配器维护一个指针heap_listp指向堆中的第一个内存块，也即链表中的第一个块。
 
-根据该内存块头部中记录的块大小信息便可计算出下一块的位置(heap_listp+size)，依此类推。
+根据该内存块头部中记录的块大小信息便可计算出下一块的位置(heap_listp+size)，依此类推。具体代码参见上一节mm_init(void)函数
 
-#### 3、放置策略
+```c
+int mm_init(void)
+{
+    // 省略
+    heap_listp += (2 * WSIZE);  
+    // 省略
+}
+
+```
+
+##### 放置策略
 
 当请求一个k字节的内存块时，分配器需要搜索堆中的内存块找到一个足够大的空闲块并返回。具体选择哪一个内存块由放置策略决定。主要有两种：
 
@@ -127,7 +343,17 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 两者相比较，首次适配速度较快，最佳适配内存利用率更高。后面的实现采用首次适配方法。
 
-#### 4、分割空闲块
+<font color = red>本次实验需要补充该函数的实现，并需要在实验报告分析代码思路</font>
+
+```c
+static void *find_fit(size_t asize)
+{
+    // 需补充
+    // @return   第一个大小合适的空闲内存块堆栈地址
+}
+```
+
+##### 分割空闲块
 
 当分配器找到一个合适的空闲块后，如果空闲块大小大于请求的内存大小，则需要分割该空闲块，避免内存浪费。
 
@@ -139,15 +365,53 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 例如在如图堆中分配一个16字节的块会将中间32字节的块分割成两个
 
-![](./picture/implicit-list.png)
+![](./picture/隐式链表.png)
 
-![](./picture/segmented.png)
+![](./picture/分割后.png)
 
-#### 5、合并空闲块
+<font color = red>本次实验需要补充该函数的实现，并需要在实验报告分析代码思路</font>
 
-当调用free释放某个块后，如果该块相邻有其他的空闲块，则需要将这些块合并成一个大的空闲块，避免出现“假碎片”现象（多个小空闲块相邻，无法满足大块内存分配请求）。
+```c
+static void place(void *bp, size_t asize)
+{
+    const size_t total_size = GET_SIZE(HDRP(bp));
+    size_t rest = total_size - asize;
+    if (rest >= MIN_BLK_SIZE) 
+    /*
+    //need split
+    */
+    {
+        /*  待补全 */
+    }
+    else
+    {
+        /*  待补全 */
+    }
+}
+```
 
-#### 6、判断相邻块是否空闲
+##### 释放和合并块
+
+当调用mm_free释放某个块后，如果该块相邻有其他的空闲块，则需要将这些块合并成一个大的空闲块，避免出现“假碎片”现象（多个小空闲块相邻，无法满足大块内存分配请求）。
+
+```c
+/*
+ * mm_free - Freeing a block does nothing.
+ */
+void mm_free(void *ptr)
+{
+    size_t size = GET_SIZE(HDRP(ptr));
+	/*
+	 * mm_free首先将其该内存标记为未分配
+	 */
+    PUT(HDRP(ptr), PACK(size, 0));
+    PUT(FTRP(ptr), PACK(size, 0));
+    /* 调用coalesce函数尝试合并相邻空闲块，具体见下节 判断相邻块是否空闲 分析 */
+    coalesce(ptr);
+}
+```
+
+##### 判断相邻块是否空闲
 
 判断相邻的下一个块是否空闲很简单：根据当前块的大小即可计算出下一块的头部位置。
 
@@ -157,113 +421,195 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
 
 添加脚部以后，块的格式如图所示：
 
-![](./picture/footer.png)
+![](./picture/脚部.png)
 
-#### 7、合并步骤
+##### 合并步骤
 
 释放当前内存块时，根据相邻块的的分配状态，有如下四种不同情况：
 
 1. 前面的块和后面的块都已分配
 2. 前面的块已分配，后面的块空闲
 3. 前面的块空闲，后面的块已分配
-4. 前后块都空闲
+4. 前后块都空闲（<font color = red>本次实验需要补充该情况的实现，并需要在实验报告分析代码思路</font>）
 
 以下为这四种情况的合并前后示意图
 
-![](./picture/merge.png)
+![](./picture/合并.png)
 
 图中m/n表示块大小，a表示已分配，f表示未分配。即根据合并结果修改当前块的头/脚部元数据。
-
-#### 8、扩充堆
-
-当搜索整个链表都找不到可用的空闲块时，调用sbrk向系统请求更多堆内存，新获得的内存在当前堆的尾部形成一个新的大空闲块。
-
-### 三、隐式空闲链表实现细节
-
-下面介绍隐式空闲链表管理的具体实现代码。
-
-#### 1、堆内存组织格式
-
-以下为该实现中堆内存的组织方式示意图。
-
-![隐式空闲链表的恒定形式](./picture/implicit-format.png)
-
-堆内存中第一个字是一个为了内存对齐的填充字。填充字后面紧跟一个特殊的序言块，它是一个8字节的已分配块，只由一个头部和一个脚部组成。序言块是在初始化时创建的，并且永不释放。序言块后面是普通块。堆的最后一个字是一个特殊的结尾块，它是一个有效大小为0的已分配块，只由一个头部组成。
-
-序言块和结尾块的作用是消除空闲块合并时的边界检查，在后续代码中可以看到。
-
-分配器使用一个私有全局变量heap_listp表示链表头，它总是指向序言块。
-
-*注意：所有内存块指针指向该块的有效载荷开始处，即头部向后一个字*
-
-#### 2、操作空闲链表的常用宏
-
-分配器实现会涉及大量的指针操作，包括从地址取值/赋值，查找块头/块脚地址等。为了方便操作以及保障操作性能，定义如下宏操作。
-
-![宏](./picture/macro.png)
-
-- 针对32位系统，定义字长位4byte（WSIZE）。
-- CHUNKSIZE为内存分配器扩充堆内存的最小单元。
-- PACK将块大小和分配位结合返回一个值（即将size的最低位赋值为分配位）
-- GET/PUT分别对指针p指向的位置取值/赋值
-- GET_SIZE/GET_ALLOC分别从p指向位置获取块大小和分配位。<font color="#DC143C">注意：p应该指向头/脚部</font>
-- HDRP/FTRP返回bp指向块的头/脚部
-- NEXT_BLKP/PREV_BLKP返回与bp相邻的下一/上一块
-
-
-#### 3、初始化分配器
-
-在开始调用malloc分配内存前，需要先调用mm_init函数初始化分配器，其主要工作是分配初始堆内存，分配序言块和尾块，以及初始化空闲链表。如下代码所示。
-
-![初始化堆](./picture/init.png)
-
-<br/>
-
-![扩展](./picture/extend.png)
-
-mm_init函数首先通过sbrk请求4个字的内存(line4~5)，然后将这四个字分别作为填充块（为了对齐），序言块头/脚部，尾块。并将heap_listp指针指向序言块使其作为链表的第一个节点(line6~10)。之后调用extend_heap函数向系统申请一个CHUNKSIZE的内存作为堆的初始内存(line13~14)。
-
-extend_heap函数是对sbrk的一层封装，接收的参数是要分配的<font color="#DC143C">字数</font>，在堆初始化以及malloc找不到合适内存块时使用。它首先对请求大小进行地址对齐，然后调用sbrk获取空间（line7～9）。
-
-成功后，将获取的空间标志为新的空闲块（line12～14）。注意这里实际操作是将扩展前的尾块作为了新空闲块的头块，然后在新的堆末尾分配一个新的尾块。
-
-
-#### 4、释放和合并块
-
-mm_free函数释放一个指针指向的已分配的内存块，如下页代码所示。
-
-mm_free首先将其该内存标记为未分配（line5~6)，然后调用coalesce函数尝试合并相邻空闲块。
 
 coalesce函数首先从前一块的脚部后后一块的头部获取它们的分配状态(line12~13)，然后根据前文所述的4种不同情况作相应处理，最后返回合并后的指针。
 
 由于序言块和尾块的存在，不需要考虑边界条件。
 
-![释放/合并代码](./picture/release-merge.png)
+```c
+static void *coalesce(void *bp)
+{
+    size_t prev_alloc = GET_ALLOC(FTRP(PREV_BLKP(bp))); 
+    size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp)));
+    size_t size = GET_SIZE(HDRP(bp));
+    /* 第一种情况 */
+    if (prev_alloc && next_alloc)
+    {
+        return bp;
+    }
+    /* 第二种情况 */
+    else if (prev_alloc && !next_alloc)
+    {
+        size += GET_SIZE(HDRP(NEXT_BLKP(bp)));
+        PUT(HDRP(bp), PACK(size, 0));
+        PUT(FTRP(bp), PACK(size, 0));
+    }
+    /* 第三种情况 */
+    else if (!prev_alloc && next_alloc)
+    {
+        size += GET_SIZE(FTRP(PREV_BLKP(bp)));
+        PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
+        PUT(FTRP(bp), PACK(size, 0));
+        bp = PREV_BLKP(bp);
+    }
+    /* 第四种情况 */
+    else
+    {
+        /*  待补充 */
+    }
+    return bp;
+}
+```
 
-#### 5、分配块
+##### 分配块
 
 最后介绍mm_malloc函数，向堆申请size大小的内存并返回指针。
 
-![分配](./picture/alloc.png)
+```c
+/* 
+ * mm_malloc - Allocate a block by incrementing the brk pointer.
+ *     Always allocate a block whose size is a multiple of the alignment.
+ */
+void *mm_malloc(size_t size)
+{
 
-首先将申请内存大小加上块头/尾部大小并进行对齐(line12~15)，然后调用find_fit函数(想想怎么实现)从内存块链表中找到合适的块，如果成功找到则调用place函数判断是否需要对该块作分割操作(line18~21)。
+    size_t newsize;			/* Adjusted block size */
+    size_t extend_size;		/* Amount to extend head if not fit */
+    char *bp;
+	/* Ignore spurious requesets */
+    if (size == 0)
+        return NULL;
+    
+    /* Adjust block size to include overhead and alignment reqs. */
+    newsize = ALIGN(size) + DSIZE;
+  
+    /* Search the free list for a fit */
+    if ((bp = find_fit(newsize)) != NULL)
+    {
+        place(bp, newsize);
+        return bp;
+    }
+    /* no fit found. Get more memory and place the block */
+    extend_size = MAX(newsize, CHUNKSIZE);
+    if ((bp = extend_heap(extend_size / WSIZE)) == NULL)
+    {
+        return NULL;
+    }
+    place(bp, newsize);
+    return bp;
+}
+```
 
-如果查找失败则向系统请求分配更多堆内存。为了避免频繁请求，一次最少申请CHUNKSIZE的内存(line24~28)
+首先将申请内存大小加上块头/尾部大小并进行对齐，然后调用find_fit函数(想想怎么实现)从内存块链表中找到合适的块，如果成功找到则调用place函数判断是否需要对该块作分割操作。
+
+如果查找失败则向系统请求分配更多堆内存。为了避免频繁请求，一次最少申请CHUNKSIZE的内存
 
 至此一个隐式链表管理方式的堆内存分配器实现完成。
 
-### 四、显式空闲链表
+##### 测试（录屏）
+
+测试代码实现在mmdriver.c中，在此列出main()函数主要代码
+
+```c
+int main(int argc, char **argv)
+{
+    stats_t *mm_stats = NULL;   /* mm (i.e. student) stats for each trace */
+
+    range_t *ranges = NULL;		/* keeps track of block extents for one trace */
+    trace_t *trace = NULL;		/* stores a single trace file in memory */
+
+    printf("\nTesting mm malloc\n");
+    mem_init();  /*initialize memory for simulate*/
+
+    /* mm_stats = (stats_t *)calloc(num_tracefiles, sizeof(stats_t));*/
+	mm_stats = (stats_t *)calloc(2, sizeof(stats_t));
+	if (mm_stats == NULL)
+		unix_error("mm_stats calloc in main failed");
+
+    /* test the mm malloc*/
+	/* short1-bal.rep  测试文件，具体参见文件 */
+    
+    trace = read_trace("short1-bal.rep");
+	mm_stats[0].ops = trace->num_ops;
+	printf("Checking mm_malloc for correctness\n");
+	mm_stats[0].valid = eval_mm_valid(trace, 0, &ranges);
+	if(mm_stats[0].valid)
+		printf("the mm malloc code is valid!\n");
+	else
+		printf("something wrong,please check you code!\n");
+	free_trace(trace);
+}
+```
+
+测试文件说明具体参见源代码下traces下的README文档说明
+
+#### 三、编写makefile文件编译并运行（录屏）
+
+```shell
+#
+# Students' Makefile for the Malloc Lab
+#
+
+CC = gcc -g
+CFLAGS = -Wall
+
+# 待补充
+OBJS = xxxx.o
+
+mmdriver: $(OBJS)
+# 待补充gcc命令（使用变量）
+	xxx
+
+#待补充
+mmdriver.o: xxxx.h
+memlib.o: xxxx.h
+mm.o: xxxx.h
+
+clean:
+	rm -f *~ *.o mmdrive
+```
+
+补充上述Makefile文件(参考下述学习资料)
+
+- [Makefile入门学习](<https://seisman.github.io/how-to-write-makefile/introduction.html>)
+
+编译项目并运行
+
+```shell
+$  make
+$  ./mmdriver
+```
+
+图：
+
+#### 四、显式空闲链表
 
 - 隐式空闲链表存在的问题
-
   - 隐式空闲链表为我们提供了一种简单的分配方式。但是，在隐式空闲链表方案中：块分配时间复杂度与堆中块的总数呈线性关系。这在实际中是不能接受的。
 
 下面介绍一种由双向链表组织的显式空闲链表方案。
 
-#### 1、块的格式
+##### 块的格式
+
 实际实现中通常将空闲块组织成某种形式的显式数据结构（如，链表）。由于空闲块的空间是不用的，所以实现链表的指针可以存放在空闲块的主体里。例如，将堆组织成一个双向的空闲链表，在每个空闲块中，都包含一个pred（前驱）和succ（后继）指针，如下图所示：
 
-![使用双向空闲链表组织的堆块格式](./picture/explict-example.png)
+![使用双向空闲链表组织的堆块格式](./picture/显式链表-分配块-空闲块示例.png)
 
 对比隐式空闲链表，双向空闲链表的方式使首次适配的分配时间由块总数的线性时间减少到空闲块数量的线性时间，因为它不需要搜索整个堆，而只是需要搜索空闲链表即可。
 
@@ -285,78 +631,56 @@ coalesce函数首先从前一块的脚部后后一块的头部获取它们的分
     - 头部、脚部的信息与分配块的头部信息格式一样。
     - 前驱表示在空闲链表中前一个空闲块的地址。后继表示在空闲链表中后一个空闲块的地址。前驱和后继是组成空闲链表的关键。
 
-#### 2、空闲块的合并与分割
-  - 合并分割的思想与隐式空闲链表时的分析一致，只是在代码实现方式上不同。
+##### 空闲块的合并与分割
 
-  - 注意：分割合并块时，一定要保证操作前和操作后所有块在空闲链表中不会互相覆盖。
+- 合并分割的思想与隐式空闲链表时的分析一致，只是在代码实现方式上不同。
+- 注意：分割合并块时，一定要保证操作前和操作后所有块在空闲链表中不会互相覆盖。
 
+##### 显示链表实验要求（<font color = red>进阶-3分</font>）
 
-## 实验要求
+- 补全find_fit()和place()函数代码,并在<font color =red>实验报告分析函数实现代码</font>
 
-### 一、实验任务
-
-#### 1、可选任务一：补全隐式空闲链表的实现
-
-- 由于在上述讲解隐式空闲链表的过程中，已经提供并分析了隐式链表的代码实现，所以你只需要将其抄到mm.c文件中，并补全部分函数即可。待补全的函数如下：
-  - ```static void *find_fit(size_t asize);```
-    - 针对某个内存分配请求，该函数在隐式空闲链表中执行首次适配搜索。
-    - 参数asize表示请求块的大小。
-    - 返回值为满足要求的空闲块的地址。若为NULL，表示当前堆块中没有满足要求的空闲块。
-  - ```static void place (void *bp, size_t asize);```
-    - 该函数将请求块放置在空闲块的起始位置。只有当剩余部分大于等于最小块的大小时，才进行块分割。
-    - 参数bp表示空闲块的地址。参数asize表示请求块的大小。
-
-- **本次实验满分为10分，由于任务一很简单，所以选择该任务的最高得分为6分**
-
-#### 2、可选任务二：显式空闲链表的实现
-
-- **选择该任务的最高分数为10分**
-
-- 实验要求：
-
-  - 基于显式空闲链表实现块的分配和释放。
-  - 分配块没有脚部。空闲块有脚部。
-  - 必须实现块的合并与分裂。
-  - 空闲链表采用后进先出的排序策略：将新释放的块放置在链表的开始处。
-  - 适配方式采用首次适配。
+```c
+static void *find_fit(size_t asize)
+{
+     char *bp = free_listp;
+    if (free_listp == NULL)
+        return NULL;
+   
+    while (bp != NULL) /*not end block;*/
+    {
+        /* 待补全 */
+    }
+    return (bp != NULL ? ((void *)bp) : NULL);
+}
 
 
-### 二、代码运行
+static void place(void *bp, size_t asize)
+{
+    size_t total_size = 0;
+    size_t rest = 0;
+    delete_from_free_list(bp);
+    /*remember notify next_blk, i am alloced*/
+    total_size = GET_SIZE(HDRP(bp));
+    rest = total_size - asize;
 
-- 你只需要在mm.c中写入自己的代码即可，其他文件均为辅助文件，无需且不允许修改。
-- trace目录下的文件为测试用例，后续可用于测试。
-
-使用如下命令编译运行程序：
-
-```shell
-#进入源码目录
-make #编译，执行后可以看到生成了一个名为mdriver的可执行文件
+    if (rest >= MIN_BLK_SIZE) /*need split*/
+    {
+        /* 待补全 */
+    }
+    else
+    {
+        /* 待补全 */
+    }
+}
 ```
 
-![make](./picture/make.png)
+- 改写Makefile文件，编译运行（<font color = red>录屏</font>）
 
-```shell
-#实验中，我们主要用到mdriver的如下功能：
-./mdrive -h #显示帮助
-./mdrive -f <file> #执行某个测试用例
-./mdrive -v #执行所有测试用例，并显示结果
-./mdrive -V #执行所有测试用例，并显示详细信息
-```
+## 本节参考资料
 
-正确编译后，执行./mdriver -v的结果如下：
+* [《Computer Systems: A Programmer's Perspective 3rd》](<https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/gdb.html>)
 
-trace列表示测试用例的编号；valid列表示运行结果是否正确；util列表示空间利用率；ops列表示执行的总操作数量；secs列表示运行时间；Kops列表示每秒执行的千操作数（也就是throughput）。最后一行是得分，图中"4.66 (util) + 4.00 (thru) = 8.7/10"表示：满分10，得分8.7，其中空间利用率得分4.66，throughput得分4.00.
+  
 
-（注意：如果有用例测试没通过，即某行trace的valid列值为"no"，则为0分）
 
-![./mdriver -v执行结果](./picture/run-example.png)
-
-### 三、评分标准
-
-- 得分由两部分构成：代码运行得分，回答问题得分。
-  - 代码运行得分即上一部分讲的使用./mdriver -v得到的分数。（存在bug或存在用例测试不通过，则代码得分为0）
-  - 回答问题得分是指：针对代码实现，助教提问问题，根据回答情况在代码分的基础上加分/扣分。
-
-## 参考资料
-
-- 《Computer Systems: A Programmer's Perspective 3rd》
