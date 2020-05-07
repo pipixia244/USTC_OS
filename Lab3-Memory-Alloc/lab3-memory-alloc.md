@@ -26,7 +26,7 @@
 
 ##### 任务一：补全隐式空闲链表的实现
 
-- 在下面文档讲解隐式空闲链表的过程中，已经提供并分析了隐式链表的代码实现，所以你只需要在mm.c 文件中**补全部分函数**即可。待补全的函数如下： 
+- 在下面文档讲解隐式空闲链表的过程中，已经提供并分析了隐式链表的代码实现，所以你只需要在mm.c 文件中**补全部分函数**即可，<font color="red">并在录屏时展示相关代码并简单解说</font>。待补全的函数如下： 
 
   - static void *find_fit(size_t asize)
     - 针对某个内存分配请求，该函数在隐式空闲链表中执行首次适配搜索。
@@ -55,12 +55,11 @@
 
 ##### 任务二：显式空闲链表的实现 （进阶）
 
-  - 实验要求：
-    - 基于显式空闲链表实现块的分配和释放。 
-    - 分配块没有脚部，空闲块有脚部。
-    - 必须实现块的合并与分裂。 
-    - 空闲链表采用后进先出的排序策略：将新释放的块放置在链表的开始处。 
-    - 适配方式采用首次适配
+  - 需要在ep_mm.c 文件中**补全部分函数**，<font color="red">并在录屏时展示相关代码并简单解说</font>，待补全的函数如下： 
+    
+      - static void *find_fit(size_t asize)
+    - static void place (void *bp, size_t asize)
+    
   - 编写Makefile文件编译运行
     - 需要在ep_mm.c 中填入自己的代码，trace目录下为测试用例
     - 修改Makefile文件
@@ -96,7 +95,7 @@
 
 - 服务器地址：[ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/](ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/)
 - 上传至文件夹: **第三次实验**
-- 实验截止日期：<font color = red size = 6>xxxx-xx-xx  xx:xx</font>
+- 实验截止日期：<font color = red size = 6>2020-05-24 23:59</font>
 
 #### 4、评分标准
 
@@ -108,86 +107,58 @@
 - 显示链表实现代码运行结果正确和实验代码解析报告完整，<font color = red>**最高可得10分（进阶）**</font>
 
 ## 四、实验内容
-实验源码下载:<font color = red>url</font>
+下载实验源码，解压后通过实验一的挂载硬盘镜像的方法，将代码文件夹复制到Linux 0.11中:
+
+```shell
+$ wget https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab3-Memory-Alloc/lab3_malloc.tar.gz
+$ tar zxf lab3_malloc.tar.gz
+```
 
 #### 1. API简介
 
-##### (1) C标准库中的堆内存分配函数介绍
-
-malloc/free是c标准库函数，用于从堆中分配内存。
-
-```c
-void* malloc(size_t size);
-```
-
-malloc函数返回一个指针，指向大小至少为size字节的空闲内存块。
-
-<font color =red>返回的内存块首地址是双字对齐的，即：在64位系统中地址为16的倍数，32位系统中为8的倍数。</font>
-
-```c
-void *sbrk(intptr_t incr);
-```
-
-当堆中剩余内存不足以响应malloc请求时，需要向操作系统申请更多的堆内存。sbrk函数通过将brk指针增加incr来 扩展和收缩堆（即当incr为负数时收缩堆）。成功时返回旧brk的地址（因此扩展堆后返回值指向一块大小为incr的空 闲内存），失败时返回-1。
-
-```c
-void free(void *ptr);
-```
-
-free函数释放ptr指向的内存块，释放出的内存可以在之后的malloc调用中被使用。
-注意：ptr必须指向由malloc、calloc、realloc分配的内存块的起始位置。
-
-##### (2) 本次实验中的相关代码简介
+##### (1) 本次实验中的相关代码简介
 
 - memlib.c - 模拟内存系统的模块，主要通过libc中malloc分配一段内存空间，用于模拟系统内存空间申请空间并实现堆栈的管理
-  - 部分主要函数和声明如下所示：
+  - 主要变量如下所示：
 
    * ```c
    /* private variables */
   static char *mem_start_brk;  /* points to first byte of heap */
   static char *mem_brk;        /* points to last byte of heap */
       static char *mem_max_addr;   /* largest legal heap address */ 
-      
-  	/* 
-  	 * mem_init - initialize the memory system model
-       * memlib.c
-   * 通过系统malloc申请5Mb的空间用于模拟
-         */
-      void mem_init(void)
-  {
-       /* allocate the storage we will use to model the available VM */
-       if ((mem_start_brk = (char *)malloc(MAX_HEAP)) == NULL) {
-           fprintf(stderr, "mem_init_vm: malloc error\n");
-           exit(1);
-       }
-   
-       mem_max_addr = mem_start_brk + MAX_HEAP;  /* max legal heap address */
-       mem_brk = mem_start_brk;                  /* heap is empty initially */
-   }
-   ```
-   
-  * mem_init介绍：
+      ```
+  	
+  * mem_init函数介绍：
 
       * 通过libc中malloc分配一段内存空间，主要用于模拟系统空间，空间大小为5MB，
+
       * 自己实现的malloc函数主要在模拟系统内存空间申请空间并实现堆栈的管理
+
       * 其中mem_brk指向自己实现的malloc空间的堆顶
-      * <img src="./picture/memlibc1.jpg" style="zoom:67%;" />
 
-  * mem_brk介绍：
+        <img src="./picture/memlibc1.jpg" style="zoom:67%;" />
 
-       * ```c
-         /* 
-         
-          * mem_sbrk - simple model of the sbrk function. Extends the heap 
-         
-          * by incr bytes and returns the start address of the new area. In
-         
-          * this model, the heap cannot be shrunk.
-             */
-         void *mem_sbrk(int incr) 
-         {
+        ```c
+        void mem_init(void)
+        {
+         /* allocate the storage we will use to model the available VM */
+         if ((mem_start_brk = (char *)malloc(MAX_HEAP)) == NULL) {
+             fprintf(stderr, "mem_init_vm: malloc error\n");
+             exit(1);
+         }
+        
+         mem_max_addr = mem_start_brk + MAX_HEAP;  /* max legal heap address */
+         mem_brk = mem_start_brk;                  /* heap is empty initially */
+         }
+        ```
+
+      * mem_brk函数介绍：模拟brk系统调用，用于扩展堆空间，具体用法见下节
+
+        ```c
+        void *mem_sbrk(int incr) 
+        {
             char *old_brk = mem_brk;
-         
+        
             if ( (incr < 0) || ((mem_brk + incr) > mem_max_addr)) {
                 errno = ENOMEM;
                 fprintf(stderr, "ERROR: mem_sbrk failed. Ran out of memory...\n");
@@ -195,17 +166,18 @@ free函数释放ptr指向的内存块，释放出的内存可以在之后的mall
             }
             mem_brk += incr;
             return (void *)old_brk;
-         }
-         ```
+        }
+        ```
+
+- mm.c，ep_mm.c：隐式和显式空闲链表的实现代码，在下文中展开介绍
 
 - mmdriver.c: 测试相关代码
-- mm.c，ep_mm.c：隐式和显式空闲链表的实现代码，在下文中展开介绍
 
 #### 2. 隐式空闲链表管理
 
 这里通过一种简单的堆内存管理方式，隐式空闲链表，为例来讲解内存分配器的实现。
 
-隐式空闲链表将堆中的内存块按地址顺序串成一个链表，接受到内存分配请求时，分配器遍历该链表来找到合适的空 闲内存块并返回。当找不到合适的空闲内存块时（如：堆内存不足，或没有大小足够的空闲内存块），调用sbrk向堆顶扩展更多的内 存。隐式空闲链表如下图所示：
+隐式空闲链表将堆中的内存块按地址顺序串成一个链表，接受到内存分配请求时，分配器遍历该链表来找到合适的空 闲内存块并返回。当找不到合适的空闲内存块时（如：堆内存不足，或没有大小足够的空闲内存块），调用sbrk向堆顶扩展更多的内存。隐式空闲链表如下图所示：
 
 ![](./picture/隐式链表.png)
 
@@ -296,8 +268,6 @@ int mm_init(void)
     /* 调用extend_heap()模拟系统空间和mymalloc堆栈变化见下面图三*/
     return 0;
 }
-
-
 ```
 
 ```c
@@ -455,7 +425,7 @@ void mm_free(void *ptr)
 
 图中m/n表示块大小，a表示已分配，f表示未分配。即根据合并结果修改当前块的头/脚部元数据。
 
-coalesce函数首先从前一块的脚部后后一块的头部获取它们的分配状态(line12~13)，然后根据前文所述的4种不同情况作相应处理，最后返回合并后的指针。
+coalesce函数首先从前一块的脚部后后一块的头部获取它们的分配状态，然后根据前文所述的4种不同情况作相应处理，最后返回合并后的指针。
 
 由于序言块和尾块的存在，不需要考虑边界条件。
 
@@ -505,7 +475,6 @@ static void *coalesce(void *bp)
  */
 void *mm_malloc(size_t size)
 {
-
     size_t newsize;			/* Adjusted block size */
     size_t extend_size;		/* Amount to extend head if not fit */
     char *bp;
@@ -539,44 +508,11 @@ void *mm_malloc(size_t size)
 
 至此一个隐式链表管理方式的堆内存分配器实现完成。
 
-##### 2.10 测试（录屏）
+##### 2.10 测试
 
-测试代码实现在mmdriver.c中，在此列出main()函数主要代码
+测试代码实现在mmdriver.c中，通过读取trace文件，生成一系列分配释放操作，验证所实现代码的正确性。
 
-```c
-int main(int argc, char **argv)
-{
-    stats_t *mm_stats = NULL;   /* mm (i.e. student) stats for each trace */
-
-    range_t *ranges = NULL;		/* keeps track of block extents for one trace */
-    trace_t *trace = NULL;		/* stores a single trace file in memory */
-
-    printf("\nTesting mm malloc\n");
-    mem_init();  /*initialize memory for simulate*/
-
-    /* mm_stats = (stats_t *)calloc(num_tracefiles, sizeof(stats_t));*/
-	mm_stats = (stats_t *)calloc(2, sizeof(stats_t));
-	if (mm_stats == NULL)
-		unix_error("mm_stats calloc in main failed");
-
-    /* test the mm malloc*/
-	/* short1-bal.rep  测试文件，具体参见文件 */
-    
-    trace = read_trace("short1-bal.rep");
-	mm_stats[0].ops = trace->num_ops;
-	printf("Checking mm_malloc for correctness\n");
-	mm_stats[0].valid = eval_mm_valid(trace, 0, &ranges);
-	if(mm_stats[0].valid)
-		printf("the mm malloc code is valid!\n");
-	else
-		printf("something wrong,please check you code!\n");
-	free_trace(trace);
-}
-```
-
-测试文件说明具体参见源代码下traces下的README文档说明
-
-##### 2.11 编写makefile文件编译并运行（录屏）
+##### 2.11 编写makefile文件编译并运行（需要录屏）
 
 ```shell
 #
@@ -613,7 +549,9 @@ $  make
 $  ./mmdriver
 ```
 
-<font color = red>todo 添加示例图片</font>
+见到如下结果表示运行成功：
+
+![ep-run](./picture/mmdriver-run.png)
 
 #### 3. 显式空闲链表
 
@@ -732,8 +670,11 @@ $  make
 $  ./epmmdriver
 ```
 
-<font color = red>todo 添加示例图片</font>
-## 本节参考资料
+见到如下结果表示运行成功：
+
+![ep-run](./picture/ep-run.png)
+
+## 参考资料
 
 * [《Computer Systems: A Programmer's Perspective 3rd》](<https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/gdb.html>)
 
