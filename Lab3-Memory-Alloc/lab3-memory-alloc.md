@@ -537,7 +537,7 @@ memlib.o: xxxx.h
 mm.o: xxxx.h
 
 clean:
-	rm -f *~ *.o mmdrive
+	rm -f *~ *.o mmdriver
 ```
 
 <font color = red>补充上述Makefile文件</font>(参考下述学习资料)
@@ -662,7 +662,7 @@ mm.o: xxxx.h
 ep_mm.o: xxxx.h
 
 clean:
-	rm -f *~ *.o mmdrive epmmdriver
+	rm -f *~ *.o mmdriver epmmdriver
 ```
 
 编译项目并运行
