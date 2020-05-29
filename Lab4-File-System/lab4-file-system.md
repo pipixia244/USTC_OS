@@ -14,7 +14,7 @@
 
 ## 3 实验说明
 
-- <font color="red">**本次实验可选做，由两个独立任务组成，完成任务能获得课程成绩额外加分（两个任务获取的分数可叠加）**</font>
+- <font color="red">**本次实验可选做，由两个独立任务组成，完成任务能获得课程成绩额外加分，每个任务4分（两个任务获取的分数可叠加）**</font>
   
   - **任务一：**利用FUSE实现一个功能完善的FAT 16文件系统
   - **任务二：**根据自己对文件系统的理解，设计一个关于文件系统的实验，包括*设计文档+实验的原型代码实现*
@@ -136,16 +136,16 @@
 
 * **DBR扇区:** DBR是操作系统可以直接访问的第一个扇区, 包括一个引导程序和一个称为**BPB的本分区参数记录表**。BPB参数块记录着本分区的启始扇区、结束扇区、文件存储格式、硬盘介质描述符、根目录大小、*FAT*个数、分配单元的大小等重要参数。下图是一个FAT16文件系统的DBR扇区：
 
-  <img src="./picture/DBR_exp1.png" alt="DBR_exp1" style="zoom:80%;" />
+  <img src="./picture/DBR_exp1.png" alt="DBR_exp1" style="zoom: 67%;" />
 
   DBR扇区每个字段代表的含义如下：
 
-  <img src="./picture/PBP.png" alt="PBP" style="zoom: 80%;" />
+  <img src="./picture/PBP.png" alt="PBP" style="zoom: 67%;" />
 
   而BPB参数记录表中的对应表述如下(这里只摘取了一些BPB的对应参数, 具体可以看[这里](https://www.cnblogs.com/smartjourneys/p/8413616.html))
 
 ​							<img src="picture/BPB1.png" alt="BPB1"  />
-​							![BPB2](picture/BPB2.png)
+​							<img src="picture/BPB2.png" alt="BPB2"  />
 
 
   根据上面的DBR扇区，我们可以算出各FAT的偏移地址，根目录的偏移地址，数据区的偏移地址。
@@ -188,7 +188,7 @@
 - 下载代码：
 
   ```shell
-  $ wget https://github.com/ZacharyLiu-CS/USTC_OS/raw/master/Lab4-File-System/lab4-code.tar.gz
+  $ wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/Lab4-File-System/lab4-code.tar.gz
   $ tar zxf lab4-code.tar.gz
   ```
 
@@ -288,9 +288,11 @@
 
 #### 本次实验要求提交<font color=red>**实验录屏、实验报告和代码**</font>
 
+* <font color="red">注意：本次实验属于**选做**实验，可自行选做感兴趣的任务，完成每个任务最多能够在最终课程成绩的基础上加4分（两个任务获得的分数可叠加）</font>
+
 ##### （1）录屏要求
 
-* 任务一：需要保证展示以下内容（缺少任意一项则视为该部分实验未完全做完，酌情给分）
+* 任务一：需要保证展示以下内容（缺少任意一项则视为该部分实验未完全做完，最后酌情给分）
   * 内容1（**“4.3.1 支持读操作的FAT16文件系统”**）
     * 一边**展示修改部分**一边**口述代码编写思路、代码做了些什么**
     * 展示在代码目录下执行``make clean;make ``的结果
@@ -337,5 +339,5 @@
 
 - 服务器地址：[ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/](ftp://OS2020:OperatingSystem2020@nas.colins110.cn:2001/)
 - 上传至文件夹: <font color=red>第四次实验</font>
-- 实验截止日期：<font color=red>2020-06-xx 23:59</font>
+- 实验截止日期：<font color=red>**2020-06-21 23:59**</font>
 - 说明：请尽早上传，截止时间前十二小时内的提交错误概不处理。
