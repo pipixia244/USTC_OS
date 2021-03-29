@@ -23,7 +23,7 @@
   mkdir ~/oslab
   cd ~/oslab
   wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.263.tar.xz #下载
-  tar -zvxf linux-4.9.263.tar.xz #解压
+  tar -Jvxf linux-4.9.263.tar.xz #解压
   ```
 
 * 准备安装所需依赖库
@@ -47,9 +47,14 @@
 * make过程中若遇到问题，可参考以下方案解决：
   ```shell
     # 问题1
+    编译内核时遇到 make[1]: *** No rule to make target 'debian/canonical-certs.pem', needed by 'certs/x509_certificate_list'.  Stop.
+    # 问题2
     *******************
     
     # 问题1解决方案：
+    用文本编辑器(vim 或 gedit)打开 PATH-TO-linux-4.9.263/.config文件, 找到并注释掉包含 CONFIG_SYSTEM_TRUSTED_KEY 和 CONFIG_MODULE_SIG_KEY 的两行即可.
+    解决方案原链接：https://unix.stackexchange.com/questions/293642/attempting-to-compile-kernel-yields-a-certification-error
+    # 问题2解决方案：
     *******************
   ```
 
