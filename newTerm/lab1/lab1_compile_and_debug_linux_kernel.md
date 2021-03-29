@@ -31,7 +31,7 @@
   * [更换apt-get源为ustc镜像源](http://mirrors.ustc.edu.cn/help/ubuntu.html)
    ```shell
   sudo apt-get install git build-essential  xz-utils libssl-dev bc libncurses5-dev libncursesw5-dev
-  ```
+   ```
 
 * 进入源代码根目录，并编译配置选择 (本次实验直接选择Save,然后exist)
 * [内核配置(make menuconfig)详述](https://blog.csdn.net/fanle76/article/details/52330265)
@@ -48,14 +48,10 @@
   ```shell
     # 问题1
     编译内核时遇到 make[1]: *** No rule to make target 'debian/canonical-certs.pem', needed by 'certs/x509_certificate_list'.  Stop.
-    # 问题2
-    *******************
     
     # 问题1解决方案：
     用文本编辑器(vim 或 gedit)打开 PATH-TO-linux-4.9.263/.config文件, 找到并注释掉包含 CONFIG_SYSTEM_TRUSTED_KEY 和 CONFIG_MODULE_SIG_KEY 的两行即可.
     解决方案原链接：https://unix.stackexchange.com/questions/293642/attempting-to-compile-kernel-yields-a-certification-error
-    # 问题2解决方案：
-    *******************
   ```
 
 
@@ -76,7 +72,7 @@
     wget https://busybox.net/downloads/busybox-1.32.1.tar.bz2  #下载
     tar -jxvf busybox-1.32.1.tar.bz2    #解压
     cd ~/oslab/busybox-1.32.1
-    ```
+  ```
 
 * （2）编译busybox
 
