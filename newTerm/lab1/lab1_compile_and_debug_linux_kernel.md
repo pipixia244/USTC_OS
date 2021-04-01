@@ -1,11 +1,11 @@
 # 实验一：
 
-# 编译运行Linux内核并通过qemu+gdb调试
+# 编译运行Linux内核,制作initramfs，并通过qemu+gdb调试
 
 ## 实验目的
 
 * 熟悉Linux系统运行环境
-* 制作根文件系统
+* 制作initramfs
 * 掌握Linux内核编译方法
 * 学习如何使用gdb调试内核
 * 熟悉Linux下常用的文件操作指令
@@ -15,9 +15,53 @@
 * OS：Ubuntu 16.04 LTS/18.04 LTS/20.04 LTS（64 bit）
 * 编译调试Linux内核版本：Kernel 4.9.263
 * **注意**：本次实验必须在Ubuntu系统上实现，可直接在机房完成，或在个人PC上安装虚拟环境完成，请注意需要下载安装64位的Ubuntu镜像。
+
+## 先导知识
+### 什么是initramfs(基于ramfs的临时文件系统)    
+- initramfs 是一种以 cpio 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像
+- BootLoader 加载 boot.img，并启动内核之后，内核接着就对 cpio 格式的 initramfs 进行解压，并将解压后得到的 rootfs 加载进内存，最后内核会检查 rootfs 中是否存在 init 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 init 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 / 根目录上，最后通过 exec chroot . /sbin/init 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 /sbin/init 程序来启动系统中的其他进程和服务。
+基于ramfs开发initramfs，取代了initrd。
+### 什么是initrd  
+- initrd代指内核启动过程中的一个阶段，临时挂载文件系统，加载硬盘的基础驱动，进而过渡到最终的根文件系统
+- 是早期基于ramdisk生成的临时根文件系统的名称
+- 现阶段虽然基于initramfs，但是临时根文件系统也依然存在某些发行版称其为initrd
+- 例：CentOS 临时根文件系统命名为 initramfs-`uname -r`.img
+Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
+
+### 为什么需要initrd/initramfs
+- Linux kernel在自身初始化完成之后，需要能够找到并运行第一个用户程序（这个程序通常叫做“init”程序）。用户程序存在于文件系统之中，因此，内核必须找到并挂载一个文件系统才可以成功完成系统的引导过程。
+  
+  在grub中提供了一个选项“root=”用来指定第一个文件系统，但随着硬件的发展，很多情况下这个文件系统也许是存放在USB设备，SCSI设备等等多种多样的设备之上，如果需要正确引导，USB或者SCSI驱动模块首先需要运行起来，可是不巧的是，这些驱动程序也是存放在文件系统里，因此会形成一个悖论。
+
+- 为解决此问题，Linux kernel提出了一个RAM disk的解决方案，把一些启动所必须的用户程序和驱动模块放在RAM disk中，这个RAM disk看上去和普通的disk一样，有文件系统，有cache，内核启动时，首先把RAM disk挂载起来，等到init程序和一些必要模块运行起来之后，再切到真正的文件系统之中。
+
+- 上面提到的RAM disk的方案实际上就是initrd。 如果仔细考虑一下，initrd虽然解决了问题但并不完美。 比如，disk有cache机制，对于RAM disk来说，这个cache机制就显得很多余且浪费空间；disk需要文件系统，那文件系统（如ext2等）必须被编译进kernel而不能作为模块来使用。
+
+- Linux 2.6 kernel提出了一种新的实现机制，即initramfs。顾名思义，initramfs只是一种RAM filesystem而不是disk。initramfs实际是一个cpio归档，启动所需的用户程序和驱动模块被归档成一个文件。因此，不需要cache，也不需要文件系统。
+
+
 ## 实验内容
-### 一、制作根文件系统
-#### 1、下载并编译Linux内核
+### 一、编译内核，制作根文件系统，并使用qemu启动
+#### 1、熟悉linux简单指令
+
+* 目标：掌握ls、touch、cat、echo、mkdir、mv、cd、cp等基本指令
+
+* 在上一步“利用busybox生成根文件系统” 运行成功之后，在qemu窗口可以看到已进入shell环境。此时就可以在我们自己制作的根文件系统中执行指令了。如下指令创建写入一个txt文件并移动文件：
+
+  ```shell
+  ls          # 查看当前目录下的所有文件/文件夹
+  touch 1.txt # 创建1.txt
+  ls
+  echo i am 1.txt > 1.txt  # 向1.txt写入内容
+  cat 1.txt   # 查看1.txt内容
+  ls -l       # 查看当前目录下的所有文件/文件夹的详细信息
+  mkdir 1     # 创建目录1
+  mv 1.txt 1  # 将1.txt移动到目录1
+  cd 1        # 打开目录1
+  ls
+  ```
+
+#### 2、下载并编译Linux内核
 * 下载linux-4.9.263.tar.gz，解压缩得到目录linux-4.9.263，不妨称之为Linux源代码根目录(以下简称源码根目录)
   ```shell
   mkdir ~/oslab
@@ -55,7 +99,7 @@
   ```
 
 
-#### 2、准备模拟器qemu
+#### 3、准备模拟器qemu
 * 直接安装qemu包即可
 
   ```shell
@@ -63,7 +107,7 @@
   ```
 
 
-#### 3、制作根文件系统：利用busybox生成根文件系统
+#### 4、制作根文件系统：利用busybox生成根文件系统,并使用qemu启动运行
 
 * （1）下载busybox
 
@@ -100,7 +144,7 @@
   sudo mkdir dev 
   sudo mknod dev/console c 5 1
   sudo mknod dev/ram b 1 0 
-  touch init
+  sudo touch init
   ```
   在init中写入以下内容（你可以使用vim或gedit编辑器写入，或在图形化界面中找到该文件，双击编辑）
   ```
@@ -118,7 +162,7 @@
 
   赋予init脚本执行，制作initramfs文件，将x86-busybox下面的内容打包归档成cpio文件，以供Linux内核做initramfs启动执行
   ```
-  chmod +x init
+  sudo chmod +x init
   cd ~/oslab/busybox-1.32.1/_install
   find . -print0 | cpio --null -ov --format=newc | gzip -9 > ~/oslab/initramfs-busybox-x64.cpio.gz  # 注意：该命令一定要在busybox的 _install 目录下执行
   # 注意：每次修改_install,都要重新执行该命令
@@ -133,24 +177,7 @@
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
 
-#### 4、熟悉linux简单指令
 
-* 目标：掌握ls、touch、cat、echo、mkdir、mv、cd、cp等基本指令
-
-* 在上一步“利用busybox生成根文件系统” 运行成功之后，在qemu窗口可以看到已进入shell环境。此时就可以在我们自己制作的根文件系统中执行指令了。如下指令创建写入一个txt文件并移动文件：
-
-  ```shell
-  ls          # 查看当前目录下的所有文件/文件夹
-  touch 1.txt # 创建1.txt
-  ls
-  echo i am 1.txt > 1.txt  # 向1.txt写入内容
-  cat 1.txt   # 查看1.txt内容
-  ls -l       # 查看当前目录下的所有文件/文件夹的详细信息
-  mkdir 1     # 创建目录1
-  mv 1.txt 1  # 将1.txt移动到目录1
-  cd 1        # 打开目录1
-  ls
-  ```
 
 
 
@@ -234,4 +261,7 @@
 
 
 ## 参考资料
+
 * [内核编译与制作根文件系统](https://www.centennialsoftwaresolutions.com/post/build-the-linux-kernel-and-busybox-for-arm-and-run-them-on-qemu)
+* [引导过程简介](https://documentation.suse.com/zh-cn/sles/15-SP2/html/SLES-all/cha-boot.html)
+* [Initramfs/指南](https://wiki.gentoo.org/wiki/Initramfs/Guide/zh-cn)
