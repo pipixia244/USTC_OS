@@ -73,7 +73,7 @@
 * 下载Linux源代码，并解压
 
   ```shell
-  $ wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/Linux-0.11-lab1.tar.gz
+  $ wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/resources/Linux-0.11-lab1.tar.gz
   $ tar -zvxf Linux-0.11-lab1.tar.gz
   ```
 
@@ -211,7 +211,7 @@ $ c                    #让qemu上的Linux继续运行
   ```
 
   > 注意事项：由于make debug默认调用qemu-system-x86_64 启动，会出现架构不兼容的现象，如下图 
-  > ![1585363904362](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585363904362.png)
+  > ![1585363904362](./picture/1585363904362.png)
   >
   > 可以在gdb中输入下面这条命令
   >
@@ -255,7 +255,7 @@ $ c                    #让qemu上的Linux继续运行
   $ fdisk hdc-0.11.img
   ```
 
-   ![1585374950753](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585374950753.png)
+   ![1585374950753](./picture/1585374950753.png)
 
 ​	(3) 可以看到img文件系统类别属于Minix，有一个分区，分区是从1开始的，<font color =red >这里需要注意，需要转化一下：1*512=512（offset)</font>
 
@@ -271,7 +271,7 @@ $ c                    #让qemu上的Linux继续运行
    $ df -h
   ```
 
-   ![1585375477694](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585375477694.png)
+   ![1585375477694](./picture/1585375477694.png)
 
 ​	(6) 挂载分区，需要使用第二步计算的参数（offset）
 
@@ -285,7 +285,7 @@ $ c                    #让qemu上的Linux继续运行
    $ df -h
   ```
 
-![1585375568754](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585375568754.png)
+![1585375568754](./picture/1585375568754.png)
 
 #### 2、文件读写交换
 
@@ -295,7 +295,7 @@ $ c                    #让qemu上的Linux继续运行
 $ ll ./hdc  #查看内容
   ```
 
-![1585375747673](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585375747673.png)
+![1585375747673](./picture/1585375747673.png)
 
 > hdc 目录下就是和 0.11 内核一模一样的文件系统了，可以读写任何文件（可能有些文件要用 sudo 才能访问）。
 
@@ -307,7 +307,7 @@ $ sudo touch hello.txt   # 创建文件
 $ sudo vim hello.txt   # 向文件写入hello world!
   ```
 
-![1585376486330](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585376486330.png)
+![1585376486330](./picture/1585376486330.png)
 
 ​	(3) 卸载文件系统hdc
 
@@ -326,7 +326,7 @@ $ df -h
 > $ df -h
 > ```
 
-![1585376964699](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585376964699.png)
+![1585376964699](./picture/1585376964699.png)
 
 ​	(4) 查看Linux0.11文件
 
@@ -335,19 +335,19 @@ $ cd ~/oslab/Linux-0.11
 $ make start
   ```
 
-![1585377103245](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585377103245.png)
+![1585377103245](./picture/1585377103245.png)
 
   ```shell
 $ ll /usr  # 列举文件
   ```
 
-![1585377202770](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585377202770.png)
+![1585377202770](./picture/1585377202770.png)
 
   ```shell
 $ more hllo.txt  # 查看文件内容
   ```
 
-![1585377388497](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585377388497.png)
+![1585377388497](./picture/1585377388497.png)
 
 > 进入 Linux 0.11（即 run 启动 qemu 以后）就会看到这个 hello.txt（即如上图所示），这样就避免了在 Linux 0.11 上进行编辑 文件的麻烦，因为 Linux 0.11 作为一个很小的操作系统，没有便捷的编辑工具。
 
@@ -358,7 +358,7 @@ $ more hllo.txt  # 查看文件内容
   $ head hello.txt
   ```
 
-![1585377832146](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585377832146.png)
+![1585377832146](./picture/1585377832146.png)
 
 ​	(6) 关闭Linux0.11系统，并在主机挂载img镜像
 
@@ -369,7 +369,7 @@ $ ll
 $ tail hello.txt
   ```
 
-![1585378255179](https://git.lug.ustc.edu.cn/gloomy/ustc_os/raw/master/Lab1-Environment/picture/1585378255179.png)
+![1585378255179](./picture/1585378255179.png)
 
 > 在 Linux 0.11 上产生的文件，可以按这种方式 “拿到” Ubuntu 下用 python 程序进行处理，某些文件(python文件等)在 Linux 0.11 上显然是不好处理，因为 Linux 0.11 上搭建不了 python 解释环境。
 

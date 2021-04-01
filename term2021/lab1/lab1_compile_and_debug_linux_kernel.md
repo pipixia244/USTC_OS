@@ -12,7 +12,7 @@
 
 ## 实验环境
 
-* OS：Ubuntu 16.04 LTS/18.04 LTS/20.04 LTS（64 bit）
+* OS：Ubuntu 18.04 LTS (64 bit) (后续实验以本次实验为基础)
 * 编译调试Linux内核版本：Kernel 4.9.263
 * **注意**：本次实验必须在Ubuntu系统上实现，可直接在机房完成，或在个人PC上安装虚拟环境完成，请注意需要下载安装64位的Ubuntu镜像。
 
@@ -59,6 +59,9 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   mv 1.txt 1  # 将1.txt移动到目录1
   cd 1        # 打开目录1
   ls
+  rm 1.txt    # 删除文件
+  cd ..       # 回退到上级目录
+  rm -r 1     # 删除目录
   ```
 
 #### 2、下载并编译Linux内核
@@ -216,9 +219,9 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 #### 3、建立gdb与gdb server之间的链接
 * 在另外一个终端运行gdb，然后在gdb界面中运行如下命令：
   ```shell
-  gdb				   #这里一定是在另外一个终端运行，不能在qemu的窗口上输入
-  target remote:1234 #则可以建立gdb和gdbserver之间的连接
-  c                  #让qemu上的Linux继续运行
+  gdb                # 这里一定是在另外一个终端运行，不能在qemu的窗口上输入
+  target remote:1234 # 则可以建立gdb和gdbserver之间的连接
+  c                  # 让qemu上的Linux继续运行
   ```
   可以看到gdb与qemu已经建立了连接。但是由于没有加载符号表，无法根据符号设置断点。下面说明如何加入断点。
 
@@ -229,16 +232,17 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 * 在另外一个终端输入如下指令运行gdb，加载符号表
 
   ```shell
-  gdb				   #这里一定是在另外一个终端运行，不能在qemu的窗口上输入
-  file ~/oslab/linux-4.9.263/vmlinux   #加载符号表
-  target remote:1234 #建立gdb和gdbserver之间的连接
+  gdb                                  # 这里一定是在另外一个终端运行，不能在qemu的窗口上输入
+  file ~/oslab/linux-4.9.263/vmlinux   # 加载符号表
+  target remote:1234                   # 建立gdb和gdbserver之间的连接
   ```
 
 * 在gdb界面中设置断点
 
   ```shell
-  break start_kernel
-  c                  #继续运行到断点
+  break start_kernel          # 设置断点 
+  c                           # 继续运行到断点
+  l                           # 查看断点处代码
   ```
 #### 5、重新配置Linux，使之携带调试信息
 * 在原来配置的基础上，重新配置Linux，使之携带调试信息
@@ -258,7 +262,15 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
 * 此时，若按照前面相同的方法来运行，则在start_kernel停下 来后，可以使用list来显示断点处相关的源代码
 
-
+## 实验检查
+### 1.shell命令检查
+1. 以学号为名创建目录
+2. 向该目录写入文件，文件名为time.txt,内容为所处时间
+3. 打印出该文件内容
+4. 删除该文件以及目录
+### 2.gdb调试内核
+1. 使用qemu启动内核
+2. 使用gdb设置断点，查看断点处代码，变量值，执行下一步代码
 
 ## 参考资料
 
