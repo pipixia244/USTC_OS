@@ -265,3 +265,4 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 * [内核编译与制作根文件系统](https://www.centennialsoftwaresolutions.com/post/build-the-linux-kernel-and-busybox-for-arm-and-run-them-on-qemu)
 * [引导过程简介](https://documentation.suse.com/zh-cn/sles/15-SP2/html/SLES-all/cha-boot.html)
 * [Initramfs/指南](https://wiki.gentoo.org/wiki/Initramfs/Guide/zh-cn)
+* [initramfs原理探讨](https://yifengyou.github.io/vita/docs/%E6%9E%84%E5%BB%BAinitramfs/initramfs%E5%8E%9F%E7%90%86%E6%8E%A2%E8%AE%A8.html)
