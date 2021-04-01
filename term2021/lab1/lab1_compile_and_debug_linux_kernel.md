@@ -14,13 +14,13 @@
 
 * OS：Ubuntu 18.04 LTS (64 bit) (后续实验以本次实验为基础)
 * 编译调试Linux内核版本：Kernel 4.9.263
-* **注意**：本次实验必须在Ubuntu系统上实现，可直接在机房完成，或在个人PC上安装虚拟环境完成，请注意需要下载安装64位的Ubuntu镜像。
+* **注意**：本次实验文档基于Ubuntu系统上实现，可直接在机房完成，或在个人PC上安装虚拟机(vmware workstation/virtual box)完成，请注意需要下载安装64位的Ubuntu镜像。
 
 ## 先导知识
 ### 什么是initramfs(基于ramfs的临时文件系统)    
 - initramfs 是一种以 cpio 格式压缩后的 rootfs 文件系统，它通常和 Linux 内核文件一起被打包成 boot.img 作为启动镜像
-- BootLoader 加载 boot.img，并启动内核之后，内核接着就对 cpio 格式的 initramfs 进行解压，并将解压后得到的 rootfs 加载进内存，最后内核会检查 rootfs 中是否存在 init 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 init 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 / 根目录上，最后通过 exec chroot . /sbin/init 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 /sbin/init 程序来启动系统中的其他进程和服务。
-基于ramfs开发initramfs，取代了initrd。
+- BootLoader 加载 boot.img，并启动内核之后，内核接着就对 cpio 格式的 initramfs 进行解压，并将解压后得到的 rootfs 加载进内存，最后内核会检查 rootfs 中是否存在 init 可执行文件（该 init 文件本质上是一个执行的 shell 脚本），如果存在，就开始执行 init 程序并创建 Linux 系统用户空间 PID 为 1 的进程，然后将磁盘中存放根目录内容的分区真正地挂载到 / 根目录上，最后通过 exec chroot . /sbin/init 命令来将 rootfs 中的根目录切换到挂载了实际磁盘分区文件系统中，并执行 /sbin/init 程序来启动系统中的其他进程和服务。 
+  基于ramfs开发initramfs，取代了initrd。
 ### 什么是initrd  
 - initrd代指内核启动过程中的一个阶段，临时挂载文件系统，加载硬盘的基础驱动，进而过渡到最终的根文件系统
 - 是早期基于ramdisk生成的临时根文件系统的名称
@@ -107,6 +107,9 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   ```shell
   sudo apt install qemu
+  
+  # Ubuntu 20.04/20.10 环境下执行以下指令
+  sudo apt install qemu-system-x86
   ```
 
 
@@ -176,6 +179,9 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   ```shell
   cd ~/oslab
   qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init"
+  
+  # Ubuntu 20.04/20.10 环境下执行以下指令
+  qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init"
   ```
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
@@ -212,6 +218,9 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 * 在终端中执行以下指令启动qemu运行内核：
   ```shell
   qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init" # 可以看到qemu在等待gdb连接
+  
+  # Ubuntu 20.04/20.10 环境下执行以下指令
+  qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init"
   ```
 * 关于-s和-S选项的说明
     * -S freeze CPU at startup (use ’c’ to start execution)
@@ -278,3 +287,4 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 * [引导过程简介](https://documentation.suse.com/zh-cn/sles/15-SP2/html/SLES-all/cha-boot.html)
 * [Initramfs/指南](https://wiki.gentoo.org/wiki/Initramfs/Guide/zh-cn)
 * [initramfs原理探讨](https://yifengyou.github.io/vita/docs/%E6%9E%84%E5%BB%BAinitramfs/initramfs%E5%8E%9F%E7%90%86%E6%8E%A2%E8%AE%A8.html)
+* [内核调试技巧](https://github.com/g0dA/linuxStack/blob/master/linux%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95%E6%8A%80%E5%B7%A7.md)
