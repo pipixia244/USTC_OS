@@ -86,7 +86,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
      ```shell
      cd ~/oslab/linux-4.9.263
-     wget https://github.com/ZacharyLiu-CS/USTC_OS/blob/master/term2021/lab1/.config
+     wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/term2021/lab1/.config
      ```
 
   2. [内核配置(make menuconfig)详述](https://blog.csdn.net/fanle76/article/details/52330265)(编译时间较长，占空间)
