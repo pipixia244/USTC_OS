@@ -203,7 +203,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
 
-  * 使用Ctrl+A C调出qemu命令行, 输入stop结束模拟进程, 再输入Ctrl+A X关闭qemu
+  * 输入Ctrl+A X结束模拟进程并关闭qemu.
 
 
 
