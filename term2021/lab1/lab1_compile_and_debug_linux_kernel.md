@@ -272,8 +272,8 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   ```shell
   break start_kernel          # 设置断点 
   c                           # 继续运行到断点
-  l                           # 查看断点处代码
-  p init_task                 # 查看断点处变量值
+  l                           # 查看断点处代码, 需执行第5步后才可以正常使用
+  p init_task                 # 查看断点处变量值, 需执行第5步后才可以正常使用
   ```
 #### 5、重新配置Linux，使之携带调试信息
 * 在原来配置的基础上，重新配置Linux，使之携带调试信息
@@ -289,7 +289,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   make -j $((`nproc`-1))
   ```
 
-* 此时，若按照前面相同的方法来运行，则在start_kernel停下 来后，可以使用list来显示断点处相关的源代码
+* 此时，若按照前面相同的方法来运行，则在start_kernel停下来后，可以使用list来显示断点处相关的源代码
 
 ## 实验检查
 ### 1.shell命令检查
