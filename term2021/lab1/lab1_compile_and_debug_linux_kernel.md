@@ -80,17 +80,28 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   sudo apt-get install git build-essential  xz-utils libssl-dev bc libncurses5-dev libncursesw5-dev
    ```
 
-* 进入源代码根目录，并编译配置选择 (本次实验直接选择Save,然后exist)
-* [内核配置(make menuconfig)详述](https://blog.csdn.net/fanle76/article/details/52330265)
-  ```shell
-  cd ~/oslab/linux-4.9.263
-  make menuconfig
-  ```
+* 进入源代码根目录，并编译配置选择 ，两种方案可供选择：
+
+  1. 精简配置，减少不必要的驱动编译(速度快，存储小)
+
+     ```shell
+     cd ~/oslab/linux-4.9.263
+     wget https://github.com/ZacharyLiu-CS/USTC_OS/blob/master/term2021/lab1/.config
+     ```
+
+  2. [内核配置(make menuconfig)详述](https://blog.csdn.net/fanle76/article/details/52330265)(编译时间较长，占空间)
+
+     ```shell
+     cd ~/oslab/linux-4.9.263
+     make menuconfig   #本次实验直接选择Save,然后exist
+     ```
+
 * 执行编译指令
+  
   ```shell
   make -j $((`nproc`-1))
-  ```
-
+```
+  
 * make过程中若遇到问题，可参考以下方案解决：
   ```shell
     # 问题1
