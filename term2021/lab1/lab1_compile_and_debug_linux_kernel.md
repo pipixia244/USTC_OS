@@ -69,7 +69,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   ```shell
   mkdir ~/oslab
   cd ~/oslab
-  wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.263.tar.xz #下载
+  wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.263.tar.xz #下载 备用链接: https://od.srpr.cc/acgg0/linux-4.9.263.tar.xz
   tar -Jvxf linux-4.9.263.tar.xz #解压
   ```
 
@@ -86,20 +86,20 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
      ```shell
      cd ~/oslab/linux-4.9.263
-     wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/term2021/lab1/.config
+     wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/term2021/lab1/.config # raw访问可能不畅, 备用链接: http://222.186.10.65:8080/directlink/3/.config
      ```
 
   2. [内核配置(make menuconfig)详述](https://blog.csdn.net/fanle76/article/details/52330265)(编译时间较长，占空间)
 
      ```shell
      cd ~/oslab/linux-4.9.263
-     make menuconfig   #本次实验直接选择Save,然后exist
+     make menuconfig   #本次实验直接选择Save,然后exit
      ```
 
 * 执行编译指令
   
   ```shell
-  make -j $((`nproc`-1))
+  make -j $((`nproc`-1)) # 此处为使用(你的CPU核心数-1)个进程进行编译, 如果虚拟机分配的cpu数只有1(如Hyper-V默认只分配1核)则需先调整虚拟机分配的核心数.
 ```
   
 * make过程中若遇到问题，可参考以下方案解决：
@@ -130,7 +130,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   ```shell
     cd ~/oslab
-    wget https://busybox.net/downloads/busybox-1.32.1.tar.bz2  #下载
+    wget https://busybox.net/downloads/busybox-1.32.1.tar.bz2  #下载 备用链接: https://od.srpr.cc/acgg0/busybox-1.32.1.tar.bz2
     tar -jxvf busybox-1.32.1.tar.bz2    #解压
     cd ~/oslab/busybox-1.32.1
   ```
@@ -192,7 +192,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   ## qemu 以图形界面，弹出窗口形式运行内核
   qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
 
-  ## Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令
+  ## Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令 (部分Ubuntu20.04/20.10系统编译linux后bzImage也在x86_64中, 根据实际情况选择bzImage路径)
   qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
 
   ## 如不希望qemu以图形界面启动，而希望以无界面形式启动，输出重定向到当前shell，使用以下命令
@@ -237,7 +237,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   ## qemu 以图形界面，弹出窗口形式运行内核
   qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
 
-  ## Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令
+  ## Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令 (部分Ubuntu20.04/20.10系统编译linux后bzImage也在x86_64中, 根据实际情况选择bzImage路径)
   qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
 
   ## 如不希望qemu以图形界面启动，而希望以无界面形式启动，输出重定向到当前shell，使用以下命令
