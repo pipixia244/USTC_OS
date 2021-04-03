@@ -46,8 +46,6 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
 * 目标：掌握ls、touch、cat、echo、mkdir、mv、cd、cp等基本指令
 
-* 在上一步“利用busybox生成根文件系统” 运行成功之后，在qemu窗口可以看到已进入shell环境。此时就可以在我们自己制作的根文件系统中执行指令了。如下指令创建写入一个txt文件并移动文件：
-
   ```shell
   ls          # 查看当前目录下的所有文件/文件夹
   touch 1.txt # 创建1.txt
@@ -62,6 +60,8 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   rm 1.txt    # 删除文件
   cd ..       # 回退到上级目录
   rm -r 1     # 删除目录
+  # 当提示权限不允许执行操作时，在命令前加sudo能够以root用户运行此命令,如
+  sudo rm 1
   ```
 
 #### 2、下载并编译Linux内核
@@ -77,7 +77,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   * 可能ubuntu官方镜像源安装下载镜像速度较慢，将镜像源切换成ustc源即可，具体方法见下
   * [更换apt-get源为ustc镜像源](http://mirrors.ustc.edu.cn/help/ubuntu.html)
    ```shell
-  sudo apt-get install git build-essential  xz-utils libssl-dev bc libncurses5-dev libncursesw5-dev
+  sudo apt-get install git build-essential libelf-dev xz-utils libssl-dev bc libncurses5-dev libncursesw5-dev
    ```
 
 * 进入源代码根目录，并编译配置选择 ，两种方案可供选择：
@@ -163,7 +163,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   sudo mknod dev/ram b 1 0 
   sudo touch init
   ```
-  在init中写入以下内容（你可以使用vim或gedit编辑器写入，或在图形化界面中找到该文件，双击编辑）
+  在init中写入以下内容,你可以使用vim或gedit编辑器写入([vim tutorial](https://www.openvim.com/))，执行sudo vim init 或 sudo gedit init.
   ```
   #!/bin/sh
   echo "INIT SCRIPT"
@@ -189,10 +189,16 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   ```shell
   cd ~/oslab
-  qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init"
-  
-  # Ubuntu 20.04/20.10 环境下执行以下指令
-  qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init"
+  ## qemu 以图形界面，弹出窗口形式运行内核
+  qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
+
+  ## Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令
+  qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
+
+  ## 如不希望qemu以图形界面启动，而希望以无界面形式启动，输出重定向到当前shell，使用以下命令
+  qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd  ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init console=ttyS0 " -nographic 
+
+
   ```
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
@@ -228,10 +234,14 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 #### 2、在qemu中启动gdb server
 * 在终端中执行以下指令启动qemu运行内核：
   ```shell
-  qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init" # 可以看到qemu在等待gdb连接
-  
-  # Ubuntu 20.04/20.10 环境下执行以下指令
-  qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "root=/dev/ram init=/init"
+  ## qemu 以图形界面，弹出窗口形式运行内核
+  qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
+
+  ## Ubuntu 20.04/20.10 环境下如果出现问题，可执行以下指令
+  qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86/boot/bzImage -initrd ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init"
+
+  ## 如不希望qemu以图形界面启动，而希望以无界面形式启动，输出重定向到当前shell，使用以下命令
+  qemu-system-x86_64 -s -S -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd  ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init console=ttyS0 " -nographic 
   ```
 * 关于-s和-S选项的说明
     * -S freeze CPU at startup (use ’c’ to start execution)
@@ -263,15 +273,14 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   break start_kernel          # 设置断点 
   c                           # 继续运行到断点
   l                           # 查看断点处代码
+  p init_task                 # 查看断点处变量值
   ```
 #### 5、重新配置Linux，使之携带调试信息
 * 在原来配置的基础上，重新配置Linux，使之携带调试信息
 
 * ```shell
   cd ~/oslab/linux-4.9.263/
-  make menuconfig
-  	kernel hacking—>
-  		[*] compile the kernel with debug info
+  ./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS
   ```
 
 * 重新编译并按照原方法执行
