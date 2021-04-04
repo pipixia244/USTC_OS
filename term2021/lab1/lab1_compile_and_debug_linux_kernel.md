@@ -203,7 +203,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
 
-
+  * 输入Ctrl+A X结束模拟进程并关闭qemu.
 
 
 
@@ -255,9 +255,25 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   ```
   可以看到gdb与qemu已经建立了连接。但是由于没有加载符号表，无法根据符号设置断点。下面说明如何加入断点。
 
-#### 4、加载vmlinux中的符号表并设置断点
+#### 4、重新配置Linux，使之携带调试信息
+* 使用Ctrl+A X组合键退出之前打开的qemu终端 
 
-* 退出之前打开的qemu终端，重新执行第2步 ”在qemu中启动gdb server “
+* 在原来配置的基础上，重新配置Linux，使之携带调试信息
+
+  ```shell
+  cd ~/oslab/linux-4.9.263/
+  ./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS
+  ```
+
+* 重新编译
+
+  ```shell
+  make -j $((`nproc`-1))
+  ```
+
+#### 5、加载vmlinux中的符号表并设置断点
+
+* 重新执行第2步 ”在qemu中启动gdb server “
 
 * 在另外一个终端输入如下指令运行gdb，加载符号表
 
@@ -274,22 +290,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   c                           # 继续运行到断点
   l                           # 查看断点处代码
   p init_task                 # 查看断点处变量值
-  ```
-#### 5、重新配置Linux，使之携带调试信息
-* 在原来配置的基础上，重新配置Linux，使之携带调试信息
 
-* ```shell
-  cd ~/oslab/linux-4.9.263/
-  ./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS
-  ```
-
-* 重新编译并按照原方法执行
-
-  ```shell
-  make -j $((`nproc`-1))
-  ```
-
-* 此时，若按照前面相同的方法来运行，则在start_kernel停下 来后，可以使用list来显示断点处相关的源代码
 
 ## 实验检查
 ### 1.shell命令检查
