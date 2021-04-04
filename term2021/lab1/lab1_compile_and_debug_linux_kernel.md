@@ -260,7 +260,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
 * 在原来配置的基础上，重新配置Linux，使之携带调试信息
 
-* ```shell
+  ```shell
   cd ~/oslab/linux-4.9.263/
   ./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS
   ```
