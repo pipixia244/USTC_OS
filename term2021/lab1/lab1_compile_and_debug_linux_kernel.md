@@ -203,7 +203,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
 
-  * 输入Ctrl+A X结束模拟进程并关闭qemu.
+  * 以无图形界面形式启动时, 可以输入Ctrl+A X结束模拟进程并关闭qemu.(图形界面无效)
 
 
 
@@ -262,7 +262,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   ```shell
   cd ~/oslab/linux-4.9.263/
-  ./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS
+  ./scripts/config -e DEBUG_INFO -e GDB_SCRIPTS -d DEBUG_INFO_REDUCED -d DEBUG_INFO_SPLIT -d DEBUG_INFO_DWARF4
   ```
 
 * 重新编译
