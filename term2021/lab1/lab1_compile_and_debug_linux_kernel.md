@@ -25,8 +25,8 @@
 - initrd代指内核启动过程中的一个阶段，临时挂载文件系统，加载硬盘的基础驱动，进而过渡到最终的根文件系统
 - 是早期基于ramdisk生成的临时根文件系统的名称
 - 现阶段虽然基于initramfs，但是临时根文件系统也依然存在某些发行版称其为initrd
-- 例：CentOS 临时根文件系统命名为 initramfs-`uname -r`.img
-Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
+- 例：CentOS 临时根文件系统命名为 initramfs-\`uname -r\`.img
+Ubuntu 临时根文件系统命名为 initrd-\`uname -r\`.img
 
 ### 为什么需要initrd/initramfs
 - Linux kernel在自身初始化完成之后，需要能够找到并运行第一个用户程序（这个程序通常叫做“init”程序）。用户程序存在于文件系统之中，因此，内核必须找到并挂载一个文件系统才可以成功完成系统的引导过程。
@@ -100,7 +100,7 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
   
   ```shell
   make -j $((`nproc`-1)) # 此处为使用(你的CPU核心数-1)个线程进行编译, 如果虚拟机分配的cpu数只有1(如Hyper-V默认只分配1核)则需先调整虚拟机分配的核心数.
-```
+  ```
   
 * make过程中若遇到问题，可参考以下方案解决：
   ```shell
@@ -197,8 +197,6 @@ Ubuntu 临时根文件系统命名为 initrd-`uname -r`.img
 
   ## 如不希望qemu以图形界面启动，而希望以无界面形式启动，输出重定向到当前shell，使用以下命令
   qemu-system-x86_64 -s -kernel ~/oslab/linux-4.9.263/arch/x86_64/boot/bzImage -initrd  ~/oslab/initramfs-busybox-x64.cpio.gz --append "nokaslr root=/dev/ram init=/init console=ttyS0 " -nographic 
-
-
   ```
 
   * 在qemu窗口可以看到成功运行，且进入shell环境
