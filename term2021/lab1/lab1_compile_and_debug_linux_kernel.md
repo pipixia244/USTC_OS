@@ -179,7 +179,7 @@ Ubuntu 临时根文件系统命名为 initrd-\`uname -r\`.img
   ```
 
   赋予init脚本执行，制作initramfs文件，将x86-busybox下面的内容打包归档成cpio文件，以供Linux内核做initramfs启动执行
-  ```
+  ```shell
   sudo chmod +x init
   cd ~/oslab/busybox-1.32.1/_install
   find . -print0 | cpio --null -ov --format=newc | gzip -9 > ~/oslab/initramfs-busybox-x64.cpio.gz  # 注意：该命令一定要在busybox的 _install 目录下执行
@@ -289,6 +289,7 @@ Ubuntu 临时根文件系统命名为 initrd-\`uname -r\`.img
   c                           # 继续运行到断点
   l                           # 查看断点处代码
   p init_task                 # 查看断点处变量值
+  ```
 
 
 ## 实验检查
