@@ -86,7 +86,8 @@ Ubuntu 临时根文件系统命名为 initrd-\`uname -r\`.img
 
      ```shell
      cd ~/oslab/linux-4.9.263
-     wget https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/term2021/lab1/.config # raw访问可能不畅, 备用链接: http://222.186.10.65:8080/directlink/3/.config
+     wget https://git.lug.ustc.edu.cn/gloomy/ustc_os/-/raw/master/term2021/lab1/.config 
+     # 备用链接: http://222.186.10.65:8080/directlink/3/.config or https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/term2021/lab1/.config 
      ```
 
   2. [内核配置(make menuconfig)详述](https://blog.csdn.net/fanle76/article/details/52330265)(编译时间较长，占空间)
@@ -293,7 +294,7 @@ Ubuntu 临时根文件系统命名为 initrd-\`uname -r\`.img
 ## 实验检查
 ### 1.shell命令检查
 1. 以学号为名创建目录
-2. 向该目录写入文件，文件名为time.txt,内容为所处时间
+2. 向该目录写入文件，文件名为time.txt,内容为当前时间
 3. 打印出该文件内容
 4. 删除该文件以及目录
 ### 2.gdb调试内核
