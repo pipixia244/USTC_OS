@@ -257,10 +257,10 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
   ./simple_fat16 -d fat_dir
   ```
   在另一个shell中进入该目录
-  1. 能够运行tree命令查看文件目录结构，(ls也可)。
-  ![read_dir1](./picture/read_dir_test1.png)  
-  2. 能够运行cat/head/tail命令查看目录下文件内容。
-  ![read_dir2](./picture/read_dir_test2.png)  
+  1. 能够运行tree/ls命令查看文件目录结构。  
+![read_dir1](./picture/read_dir_test1.png)  
+  2. 能够运行cat/head/tail命令查看目录下文件内容。  
+![read_dir2](./picture/read_dir_test2.png)  
 
 
 ## 参考资料
