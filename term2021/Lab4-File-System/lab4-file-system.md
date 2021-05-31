@@ -6,10 +6,32 @@
 
 ## 实验环境
 
-* OS：Ubuntu 18.04 
-### 背景知识：熟悉FUSE的使用
+* OS：Ubuntu 18.04LTS
 
-####  FUSE概述
+## 实验时间安排
+
+注：此处为实验发布时的安排计划，请以课程主页和课程群内最新公告为准
+
+- 6.4  晚实验课，讲解及检查实验
+- 6.11晚实验课，检查实验
+- 6.18晚实验课，检查实验
+## 实验代码提交
+```  
+本次实验以现场检查为主，主要在于考察实验内容、过程思路及确认结果。本实验只需提交代码，无需写实验报告。提交代码仅用于检查实验是否为自己独立完成，不另算分。  
+```
+- 提交代码simple_fat16.c
+- 将上述文件压缩
+  - 格式为 .7z/.rar/.zip
+  - 命名格式为 学号_姓名_实验4，如果上传后需要修改，请将文件重新命名为学号_姓名_实验4_修改n (n为修改版本)，以最后修改版本为准。
+ - 如PB10001000_张三_实验4.zip , PB10001000_张三_实验4_修改n.zip 
+## 实验评分
+1. 任务一，满分5分  
+  - 能够运行tree/ls命令查看文件目录结构 (2.5分)
+  - 能够运行cat/head/tail命令查看目录下文件内容 (2.5分)
+2. 任务二，满分5分  
+  - TODO
+2. 实验进阶分(满分2分) 
+## 背景知识：FUSE概述
 ![fuse_arch](./picture/fuse_arch.png)
 * FUSE（Filesystem in Userspace，用户态文件系统）是一个实现在用户空间的文件系统框架，通过FUSE内核模块的支持，使用者只需要根据fuse提供的接口实现具体的文件操作就可以实现一个文件系统。 
 * FUSE主要由三部分组成：FUSE内核模块、用户空间库libfuse以及挂载工具fusermount：
@@ -36,7 +58,7 @@
   $ sudo make install
   ```
 
-- **编译出错处理：**在执行./makeconf.sh可能会遇到“ libtoolize: not found ”或 “autoreconf: not found”，需要安装libtool和autoconf软件包，ubuntu下可以通过下面的命令安装：
+- **编译出错处理** 在执行./makeconf.sh可能会遇到“ libtoolize: not found ”或 “autoreconf: not found”，需要安装libtool和autoconf软件包，ubuntu下可以通过下面的命令安装：
 
   ```shell
   sudo apt install libtool
@@ -62,9 +84,8 @@
   fusermount -u fuse_test_dir
   ```
 
-- **提示：**当执行用户自己实现的fuse程序时，如果出现下图的错误（"fuse: bad mount point"），可通过执行上面这条命令卸载对应的文件夹来解决。
+- **提示** 当执行用户自己实现的fuse程序时，如果出现错误（"fuse: bad mount point ...Transport endpoint is not connected"），可通过执行上面这条命令卸载对应的文件夹来解决。
 
-  ![fuse_error](./picture/fuse_error.png)
 
 
 
@@ -114,14 +135,14 @@ FAT(File Allocation Table)是“文件分配表”的意思。顾名思义，就
 |--             |--     |:--: |--|
 |BS_jmpBoot     |0x00	|3	|跳转指令（跳过开头一段区域）|
 |BS_OEMName     |0x03	|8	|OEM名称，Windows操作系统没有针对这个字段做特殊的逻辑，理论上说这个字段只是一个标识字符串，但是有一些FAT驱动程序可能依赖这个字段的指定值。常见值是"MSWIN4.1"和"FrLdr1.0"|
-|<b>BPB_BytsPerSec |0x0b	|2	|<b>每个扇区的字节数。基本输入输出系统参数块从这里开始。|
-|<b>BPB_SecPerClus |0x0d	|1	|<b>每簇扇区数|
-|<b>BPB_RsvdSecCnt |0x0e	|2	|<b>保留扇区数（包括主引导区）|
-|<b>BPB_NumFATS    |0x10	|1	|<b>文件分配表数目，FAT16文件系统中为0x02,FAT2作为FAT1的冗余|
-|<b>BPB_RootEntCnt |0x11	|2	|<b>最大根目录条目个数|
+|**BPB_BytsPerSec** |0x0b	|2	|**每个扇区的字节数。基本输入输出系统参数块从这里开始。**|
+|**BPB_SecPerClus** |0x0d	|1	|**每簇扇区数**|
+|**BPB_RsvdSecCnt** |0x0e	|2	|**保留扇区数（包括主引导区）**|
+|**BPB_NumFATS**    |0x10	|1	|**文件分配表数目，FAT16文件系统中为0x02,FAT2作为FAT1的冗余**|
+|**BPB_RootEntCnt** |0x11	|2	|**最大根目录条目个数**|
 |BPB_TotSec16   |0x13	|2	|总扇区数（如果是0，就使用偏移0x20处的4字节值）|
 |BPB_Media      |0x15	|1	|介质描述：F8表示为硬盘，F0表示为软盘|
-|<b>BPB_FATSz16 |0x16	|2	|<b>每个文件分配表的扇区数（FAT16专用）|
+|**BPB_FATSz16** |0x16	|2	|**每个文件分配表的扇区数（FAT16专用）**|
 |BPB_SecPerTrk  |0x18	|2	|每磁道的扇区数|
 |BPB_NumHeads   |0x1a	|2	|磁头数|
 |BPB_HiddSec    |0x1c	|4	|隐藏扇区数|
@@ -158,20 +179,22 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
 ![fat_entry](./picture/fat_entry.png)
 
 **文件的目录项结构**
-|名称               |偏移(字节) |长度(字节)|说明|
+
+|名称             |偏移(字节) |长度(字节)|说明|
 |--                 |--     |:--: |--|
-|<b>DIR_Name           |0x00   |11     |<b>文件名（前8个字节为文件名，后3个为拓展名）
-|<b>DIR_Attr           |0x0B   |1      |<b>文件属性，取值为0x10表示为目录，0x20表示为文件
-|DIR_NTRes          |0x0C   |1      |保留
-|DIR_CrtTimeTenth   |0x0D   |1      |保留(FAT32中用作创建时间，精确到10ms))
-|DIR_CrtTime        |0x0E   |2      |保留(FAT32中用作创建时间，精确到2s)
-|DIR_CrtDate        |0x10   |2      |保留(FAT32中用作创建日期)
-|DIR_LstAccDate     |0x12   |2      |保留(FAT32中用作最近访问日期）
-|DIR_FstClusHI      |0x14   |2      |保留(FAT32用作第一个簇的两个高字节)
+|**DIR_Name**           |0x00   |11     |**文件名（前8个字节为文件名，后3个为拓展名**|
+|**DIR_Attr**           |0x0B   |1      |**文件属性，取值为0x10表示为目录，0x20表示为文件**|
+|DIR_NTRes          |0x0C   |1      |保留|
+|DIR_CrtTimeTenth   |0x0D   |1      |保留(FAT32中用作创建时间，精确到10ms))|
+|DIR_CrtTime        |0x0E   |2      |保留(FAT32中用作创建时间，精确到2s)|
+|DIR_CrtDate        |0x10   |2      |保留(FAT32中用作创建日期)|
+|DIR_LstAccDate     |0x12   |2      |保留(FAT32中用作最近访问日期）|
+|DIR_FstClusHI      |0x14   |2      |保留(FAT32用作第一个簇的两个高字节)|
 |DIR_WrtTime        |0x16   |2      |文件最近修改时间|
 |DIR_WrtDate        |0x18   |2      |文件最近修改日期|
-|<b>DIR_FstClusLO      |0x1A   |2      |<b>文件首簇号(FAT32用作第一个簇的两个低字节)|
-|<b>DIR_FileSize       |0x1C   |4      |<b>文件大小|
+|**DIR_FstClusLO**      |0x1A   |2      |**文件首簇号(FAT32用作第一个簇的两个低字节)**|
+|**DIR_FileSize**       |0x1C   |4      |**文件大小**|
+
 #### 文件分配表(FAT表)详解
 * FAT表由FAT表项构成的，我们把FAT表项简称为FAT项，本次实验中，FAT项为`2`个字节大小。每个FAT项的大小有12位，16位，32位，三种情况，对应的分别FAT12，FAT16，FAT32文件系统。
 
@@ -193,7 +216,7 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
 |0xFFF8 - 0xFFFF	|文件最后一个簇|
 
 ### 完成simple fat16中关于读文件的部分
-* 代补全部分：完成simple_fat16.c文件中TODO部分，主要包括以下功能
+* **代补全部分**：完成simple_fat16.c文件中TODO部分，主要包括以下功能
     1. path_split 将输入路径按“/”分割成多个字符串，并按照FAT文件名格式转换字符串
     2. path_decode 将FAT文件名格式解码成原始的文件名
     3. pre_init_fat16 读取启动扇区，获得文件系统相关参数，初始化fat16_ins的其余成员变量
@@ -203,33 +226,29 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
     7. fat16_readdir 遍历给定目录下的所有文件名，返回给fuse
     8. fat16_read 从给定文件中读取一定长度的数据，返回给fuse
 
+- **代码下载**
+  ```shell
+  mkdir -p lab4-code
+  wget http://staff.ustc.edu.cn/~ykli/os2021/lab/lab4-code.tar.gz 
+  # 备选链接1: https://raw.githubusercontent.com/ZacharyLiu-CS/USTC_OS/master/term2021/Lab4-File-System/lab4-code.tar.gz
+  # 备选链接2: https://git.lug.ustc.edu.cn/gloomy/ustc_os/-/raw/master/term2021/Lab4-File-System/lab4-code.tar.gz
+  tar -zxvf lab4_code.tar.gz -C lab4-code
+  ```
 
-- 代码调试
-  
+- **代码编译调试** 
   请在main函数中的指定位置编写调试相关代码(如对上面的补充好了的函数进行调用, 并观察其返回的结果符不符合你的预期). 可以使用
 
   ```shell
   #进入源码目录
+  cd lab4-code
   make clean
   make
-  ./simple_fat16 --debug
-  ```
-  执行调试部分的代码. 
-
-
-- 使用如下的命令编译并测试程序：
-
-  ```shell
-  #进入源码目录
-  make clean
-  make
-  #测试一
   ./simple_fat16 --test
   ```
 
   测试一是为了验证程序的FAT相关部分的代码正确性（以fat16_test.img作为磁盘镜像文件），一共有6个测试目标：
 
-  <img src="./picture/test1.png" alt="test1" style="zoom: 50%;" />
+  ![read_debug](./picture/read_debug.png)
 
   通过测试一后，运行如下的命令进行FUSE功能的测试（以fat16.img作为磁盘镜像文件）：
 
@@ -237,25 +256,14 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
   #测试二
   ./simple_fat16 -d fat_dir
   ```
+  在另一个shell中进入该目录
+  1. 能够运行tree命令查看文件目录结构，(ls也可)。
+  ![read_dir1](./picture/read_dir_test1.png)  
+  2. 能够运行cat/head/tail命令查看目录下文件内容。
+  ![read_dir2](./picture/read_dir_test2.png)  
 
-  这时候在文件管理器中打开fat_dir目录，需要能够看到里面的文件列表，以及正常访问里面的文件：
 
-<img src="./picture/test2.png" alt="test2" style="zoom: 50%;" />
-
-##### 回答问题
-
-* 简要描述代码定义的结构体fat16_oper中每个元素所对应的操作和操作执行的流程
-* 阅读libfuse源码，试解释本实验中使用到的fuse_main()函数，要求至少追踪到fuse_session_loop()函数的调用并解释出此函数执行的内容。
-
-### 
 ## 参考资料
 * [FAT文件系统实现](https://github.com/eerimoq/simba/blob/master/src/filesystems/fat16.c)
 * [文件分配表](https://zh.wikipedia.org/wiki/%E6%AA%94%E6%A1%88%E9%85%8D%E7%BD%AE%E8%A1%A8)
 * [fat32文件系统示例](https://liuyehcf.github.io/2017/09/25/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F2/)
-## 实验时间安排
-
-注：此处为实验发布时的安排计划，请以课程主页和课程群内最新公告为准
-
-- 6.4  晚实验课，讲解及检查实验
-- 6.11晚实验课，检查实验
-- 6.18晚实验课，检查实验
