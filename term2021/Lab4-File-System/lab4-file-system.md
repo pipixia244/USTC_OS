@@ -32,15 +32,14 @@
   - 能够运行tree/ls命令查看文件目录结构 (2.5分)
   - 能够运行cat/head/tail命令查看目录下文件内容 (2.5分)
 2. 任务二，满分5分  
-  - 能够运行touch命令创建新文件，要保证文件属性的正确填写（2.5分）
+  - 能够运行touch命令创建新文件，要保证目录中对应entry属性的正确填写（2.5分）
   - 能够运行rm命令删除已有文件，要保证簇的正确释放（2.5分）
 
 3. 实验进阶分(满分2分) 
 
-- 长文件名？
-- 簇分配？
-- 写文件？
-- 多线程？
+- 在前面的基础上，实现支持写入文件的操作
+
+  <font color="red">注意：文件已有簇的空闲空间小可能不足以写入新内容，在空间不够时需要为该文件分配簇</font>
 
 ## 背景知识：FUSE概述
 ![fuse_arch](./picture/fuse_arch.png)
@@ -236,6 +235,7 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
     8. fat16_read 从给定文件中读取一定长度的数据，返回给fuse
 
 - **代码下载**
+  
   ```shell
   mkdir -p lab4-code
   wget http://staff.ustc.edu.cn/~ykli/os2021/lab/lab4-code.tar.gz 
@@ -243,7 +243,11 @@ FAT Table中存储了所有可用的簇，通过簇地址查找使用情况，�
   # 备选链接2: https://git.lug.ustc.edu.cn/gloomy/ustc_os/-/raw/master/term2021/Lab4-File-System/lab4-code.tar.gz
   tar -zxvf lab4_code.tar.gz -C lab4-code
   ```
-
+  
+- **提示**
+  
+  **可采用Linux下的xxd和hexdump等命令或者Windows下的WinHex等十六进制文件编辑工具，分析对应的磁盘镜像文件；以及，在动手写代码之前，仔细查看fat16.h文件中的结构体声明，熟悉这些会对你们代码实现上有较大帮助。**
+  
 - **代码编译调试** 
   请在main函数中的指定位置编写调试相关代码(如对上面的补充好了的函数进行调用, 并观察其返回的结果符不符合你的预期). 可以使用
 
@@ -378,7 +382,7 @@ int dir_entry_create(FAT16 *fat16_ins,int sectorNum,int offset,char *Name, BYTE 
 int freeCluster(FAT16 *fat16_ins, int ClusterNum)
 ```
 
-函数的主体框架已经给出，你需要实现每个函数中的TODO标记部分。**如果觉得给出的框架不合适，也可以自己重新实现，保证功能的正确性即可。**
+函数的主体框架已经给，你需要实现每个函数中的TODO标记部分。**如果觉得给出的框架不合适，也可以自己重新实现，保证功能的正确性即可。**
 
 ## 参考资料
 
